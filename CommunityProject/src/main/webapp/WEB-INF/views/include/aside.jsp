@@ -3,11 +3,14 @@
 <aside id="colorlib-aside" role="complementary" class="js-fullheight">
 	<nav id="colorlib-main-menu" role="navigation">
 		<ul>
-			<li class="colorlib-active"><a href="index.html">Home</a></li>
-			<li><a href="fashion.html">Fashion</a></li>
-			<li><a href="travel.html">Travel</a></li>
-			<li><a href="about.html">About</a></li>
-			<li><a href="contact.html">Contact</a></li>
+			<li class="colorlib-active"><a href="index.html">메인 페이지</a></li>
+			<li><a href="fashion.html">공지사항</a></li>
+			<li><a href="travel.html">이벤트</a></li>
+			<li><a href="about.html">자유 게시판</a></li>
+			<li><a href="contact.html">사진 게시판</a></li>
+			<li><a href="contact.html">가입 인사</a></li>
+			<li><a href="contact.html">출석</a></li>
+			<li><a href="contact.html">로그인</a></li>
 		</ul>
 	</nav>
 	<div class="colorlib-footer">

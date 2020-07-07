@@ -17,7 +17,7 @@
 	    				<div class="row pt-md-4">
 			    			<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_1.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_1.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">A Loving Heart is the Truest Wisdom</a></h3>
 				              <div class="meta-wrap">
@@ -34,7 +34,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_2.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_2.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">Great Things Never Came from Comfort Zone</a></h3>
 				              <div class="meta-wrap">
@@ -51,7 +51,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_3.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_3.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">Paths Are Made by Walking</a></h3>
 				              <div class="meta-wrap">
@@ -68,7 +68,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_4.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_4.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">The Secret of Getting Ahead is Getting Started</a></h3>
 				              <div class="meta-wrap">
@@ -85,7 +85,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_5.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_5.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -102,7 +102,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_6.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_6.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -119,7 +119,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_7.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_7.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -136,7 +136,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_8.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_8.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -153,7 +153,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_9.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_9.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -170,7 +170,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_10.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_10.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -187,7 +187,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_11.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_11.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -204,7 +204,7 @@
 								</div>
 								<div class="col-md-12">
 									<div class="blog-entry ftco-animate d-md-flex">
-										<a href="single.html" class="img img-2" style="background-image: url(images/image_12.jpg);"></a>
+										<a href="single.html" class="img img-2" style="background-image: url(/resources/images/image_12.jpg);"></a>
 										<div class="text text-2 pl-md-4">
 				              <h3 class="mb-2"><a href="single.html">You Can't Blame Gravity for Falling in Love</a></h3>
 				              <div class="meta-wrap">
@@ -259,7 +259,7 @@
 	            <div class="sidebar-box ftco-animate">
 	              <h3 class="sidebar-heading">Popular Articles</h3>
 	              <div class="block-21 mb-4 d-flex">
-	                <a class="blog-img mr-4" style="background-image: url(images/image_1.jpg);"></a>
+	                <a class="blog-img mr-4" style="background-image: url(/resources/images/image_1.jpg);"></a>
 	                <div class="text">
 	                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control</a></h3>
 	                  <div class="meta">
@@ -270,7 +270,7 @@
 	                </div>
 	              </div>
 	              <div class="block-21 mb-4 d-flex">
-	                <a class="blog-img mr-4" style="background-image: url(images/image_2.jpg);"></a>
+	                <a class="blog-img mr-4" style="background-image: url(/resources/images/image_2.jpg);"></a>
 	                <div class="text">
 	                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control</a></h3>
 	                  <div class="meta">
@@ -281,7 +281,7 @@
 	                </div>
 	              </div>
 	              <div class="block-21 mb-4 d-flex">
-	                <a class="blog-img mr-4" style="background-image: url(images/image_3.jpg);"></a>
+	                <a class="blog-img mr-4" style="background-image: url(/resources/images/image_3.jpg);"></a>
 	                <div class="text">
 	                  <h3 class="heading"><a href="#">Even the all-powerful Pointing has no control</a></h3>
 	                  <div class="meta">
@@ -307,7 +307,7 @@
 	              </ul>
 	            </div>
 
-							<div class="sidebar-box subs-wrap img py-4" style="background-image: url(images/bg_1.jpg);">
+							<div class="sidebar-box subs-wrap img py-4" style="background-image: url(/resources/images/bg_1.jpg);">
 								<div class="overlay"></div>
 								<h3 class="mb-4 sidebar-heading">Newsletter</h3>
 								<p class="mb-4">Far far away, behind the word mountains, far from the countries Vokalia</p>

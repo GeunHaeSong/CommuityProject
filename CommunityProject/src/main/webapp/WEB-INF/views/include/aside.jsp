@@ -11,8 +11,8 @@
 			<li><a href="/boardPage/travel">가입 인사</a></li>
 			<li><a href="/boardPage/about">출석</a></li> <!-- 파일 만들어야합니다. -->
 			<br/>
-			<li><a href="/boardPage/about">로그인</a></li> <!-- 파일 만들어야합니다. -->
-			<li><a href="/boardPage/about">회원가입</a></li> <!-- 파일 만들어야합니다. -->
+			<li><a href="/member/loginForm">로그인</a></li> <!-- 파일 만들어야합니다. -->
+			<li><a href="/member/joinForm">회원가입</a></li> <!-- 파일 만들어야합니다. -->
 		</ul>
 	</nav>
 	<div class="colorlib-footer">

@@ -10,7 +10,7 @@ public class BoardPageController {
 
 	// 기본 페이지로 이동시키는 작업 입니다.
 	// 현재 페이지는 mainView, about, contact, fashion, single, travel 있습니다.
-
+	
 	@RequestMapping(value="/mainView", method=RequestMethod.GET)
 	public String boardPageMainView() throws Exception {
 		return "mainView/mainView";

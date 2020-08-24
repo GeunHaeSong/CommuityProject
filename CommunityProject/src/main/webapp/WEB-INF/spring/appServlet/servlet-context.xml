@@ -23,6 +23,25 @@
 	
 	<context:component-scan base-package="com.sgh.community" />
 	
+	<!-- Multipart Resolver : (파일 업로드) -->
+	<!-- 주의: id="multipartResolver" 필수 : DispatcherServlet에서 사용하는 이름임 -->
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="10485760"></beans:property> <!-- 최대 크기 정하기 -->
+	</beans:bean>
+		
+	<beans:bean id="uploadPath" class="java.lang.String">
+		<beans:constructor-arg value="D:/upload"/>
+	</beans:bean>
 	
+	<!-- 인터셉터 빈 -->
+	<beans:bean id="memberInterceptor" class="com.sgh.community.interceptor.MemberInterceptor"></beans:bean>
+	
+	<interceptors>
+		<interceptor>
+			<mapping path="/member/myPage"/>
+<!-- 			<exclude-mapping path="/board/listPage"/> 제외시키기--> 
+			<beans:ref bean="memberInterceptor"/>
+		</interceptor>
+	</interceptors>
 	
 </beans:beans>

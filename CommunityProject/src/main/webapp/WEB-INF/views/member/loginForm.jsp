@@ -5,6 +5,36 @@
 <%@ include file="../include/header.jsp"%>
 <!-- 화면 왼쪽에 aside.jsp 추가 -->
 <%@ include file="../include/aside.jsp"%>
+<!-- 부트스트랩 -->
+<%@ include file="../include/bootstrap.jsp"%>
+
+<script>
+$(function() {
+	// 로그인 실패
+	var loginResult = "${loginResult}";
+	if(loginResult == "false") {
+		alert("로그인에 실패하셨습니다. 다시 확인해주세요.");
+	}
+	
+	// 로그인이 필요한 서비스에 로그인 세션이 존재하지 않을 시
+	var sessionResult = "${sessionResult}";
+	if(sessionResult == "false") {
+		alert("로그인이 필요한 서비스 입니다.");
+	}
+	
+	// 아이디 찾기 성공 결과
+	var idFindResult = "${idFindResult}";
+	if(idFindResult == "true") {
+		alert("성공적으로 아이디를 찾았습니다. 입력하신 메일로 아이디를 보냈습니다.");
+	}
+	
+	// 비밀번호 변경 성공 결과
+	var pwChangeResult = "${pwChangeResult}";
+	if(pwChangeResult == "true") {
+		alert("비밀번호를 변경하셨습니다. 변경된 비밀번호로 로그인 해주세요.");
+	}
+});
+</script>
 
 <div id="colorlib-main">
 	<section class="ftco-section ftco-no-pt ftco-no-pb">
@@ -22,20 +52,19 @@
 			<div class="row">
 				<div class="col-md-1"></div>
 				<div class="col-md-9">
-					<form role="form">
+					<form role="form" action="/member/loginRun" method="post">
 						<div class="form-group">
-							<label for="user_id">아이디</label> <input
-								type="text" class="form-control" id="user_id" name="user_pw" required/>
+							<label for="member_id">아이디</label>
+							<input type="text" class="form-control" id="member_id" name="member_id" required/>
 						</div>
 						<div class="form-group">
-
-							<label for="user_pw">비밀번호</label> <input
-								type="password" class="form-control" id="user_pw" name="user_pw" required/>
+							<label for="member_pw">비밀번호</label>
+							<input type="password" class="form-control" id="member_pw" name="member_pw" required/>
 						</div>
 						<button type="submit" class="btn btn-primary">로그인</button>
-						<a href="#" style="margin-left: 10px;">아이디 찾기</a>
-						<a href="#" style="margin-left: 10px;">비밀번호 찾기</a>
-						<a href="#" style="margin-left: 10px;">회원가입</a>
+						<a href="/find/idFindForm" style="margin-left: 10px;">아이디 찾기</a>
+						<a href="/find/pwFindForm" style="margin-left: 10px;">비밀번호 찾기</a>
+						<a href="/member/joinForm" style="margin-left: 10px;">회원가입</a>
 					</form>
 				</div>
 				<div class="col-md-2"></div>

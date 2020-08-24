@@ -4,11 +4,26 @@
 <html lang="en">
 <!-- header 부분 인크루드 -->
 <%@ include file="../include/header.jsp" %>
-  <body>
+<style>
+	.atc_input {
+		cursor : pointer;
+		color : blue;
+		text-size : 15px;
+		margin-left: 15px;
+		padding-left: 5px;
+		padding-right: 5px;
+		background-color : #ccc;
+	}
+</style>
+<body>
+
+<!-- 첨부파일 -->
+<input type="file" class="form-control-file" id="image" style="display: none"/>
+<input type="file" class="form-control-file" id="file" style="display: none"/>
+<input type="file" class="form-control-file" id="movie" style="display: none"/>
 
 	<div id="colorlib-page">
 		<a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
-		
 		<!-- aside.jsp 인크루드 -->
 		<%@ include file="../include/aside.jsp" %>
 		
@@ -17,7 +32,7 @@
 	      <div class="container">
 	        <div class="row d-flex mb-5 contact-info">
 	          <div class="col-md-12 mb-4">
-	            <h2 class="h3">Contact Information</h2>
+	            <h2 class="h3">게시글 작성하기</h2>
 	          </div>
 	          <div class="w-100"></div>
 	          <div class="col-lg-6 col-xl-3 d-flex mb-4">
@@ -42,29 +57,30 @@
 	          </div>
 	        </div>
 	        <div class="row block-9">
-	          <div class="col-lg-6 d-flex">
+	          <div class="col-lg-9 d-flex">
 	            <form action="#" class="bg-light p-5 contact-form">
 	              <div class="form-group">
-	                <input type="text" class="form-control" placeholder="Your Name">
+	                <select>
+	                	<option>카테고리 종류 넣을 셀렉트 박스</option>
+	                </select>
 	              </div>
 	              <div class="form-group">
-	                <input type="text" class="form-control" placeholder="Your Email">
+	              	<label class="atc_input" for="image">사진</label>
+	              	<label class="atc_input" for="file">파일</label>
+	              	<label class="atc_input" for="movie">동영상</label>
 	              </div>
 	              <div class="form-group">
-	                <input type="text" class="form-control" placeholder="Subject">
+	                <input type="text" class="form-control" name="board_title" placeholder="제목">
 	              </div>
 	              <div class="form-group">
-	                <textarea name="" id="" cols="30" rows="7" class="form-control" placeholder="Message"></textarea>
+	                <textarea name="board_content" cols="100" rows="15" placeholder="내용을 입력해주세요."></textarea>
 	              </div>
 	              <div class="form-group">
-	                <input type="submit" value="Send Message" class="btn btn-primary py-3 px-5">
+	                <input type="submit" value="작성하기" class="btn btn-primary py-3 px-5">
+	                <input type="button" value="취소하기" class="btn btn-primary py-3 px-5">
 	              </div>
 	            </form>
 	          
-	          </div>
-
-	          <div class="col-lg-6 d-flex">
-	          	<div id="map" class="bg-light"></div>
 	          </div>
 	        </div>
 	      </div>
@@ -72,8 +88,10 @@
 		</div><!-- END COLORLIB-MAIN -->
 	</div><!-- END COLORLIB-PAGE -->
 
-  <!-- loader -->
-  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+<!-- 지도 api인듯? -->
+<!--   <!-- loader -->
+<!--   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div> -->
 
 
 <!-- footer.jsp 인크루드 -->

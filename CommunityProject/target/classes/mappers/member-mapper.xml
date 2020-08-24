@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mappers.member-mapper">
+	
+	<!-- 아이디 중복 체크 -->
+	<select id="idDupCheck" resultType="integer">
+		select count(*) from tbl_member where member_id = #{member_id}
+	</select>
+	
+	<!-- 이메일 중복 체크 -->
+	<select id="emailDupCheck" resultType="integer">
+		select count(*)
+		from tbl_member
+		where member_email = #{member_email} and member_state = 'Y'
+	</select>
+	
+	<!-- 회원가입 처리 -->
+	<select id="insertMember" resultType="MemberVo">
+		insert into tbl_member(member_id, member_pw, member_nickname, member_email, member_birthday, member_phone_number, member_address, member_name)
+		values(#{member_id}, #{member_pw}, #{member_nickname}, #{member_email}, #{member_birthday}, #{member_phone_number}, #{member_address}, #{member_name})
+	</select>
+	
+	<!-- 로그인 처리 -->
+	<select id="selectMember" resultType="MemberLoginVo">
+		select member_state, rating_name from tbl_member
+		where member_id = #{member_id} and member_pw = #{member_pw}
+	</select>
+	
+	<!-- id 찾기 -->
+	<select id="selectIdFind" resultType="String">
+		select member_id from tbl_member
+		where member_name = #{member_name} and member_email = #{member_email}
+	</select>
+	
+	<!-- pw 찾기 -->
+	<select id="selectPwFind" resultType="integer">
+		select count(*) from tbl_member
+		where member_id = #{member_id} and member_name = #{member_name}
+		and member_email = #{member_email}
+	</select>
+	
+	<!-- pw 변경 -->
+	<update id="pwChange">
+		update tbl_member set
+		    member_pw = #{member_pw}
+		where member_id = #{member_id}
+	</update>
+</mapper>

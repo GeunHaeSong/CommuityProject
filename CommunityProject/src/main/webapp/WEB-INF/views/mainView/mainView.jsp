@@ -2,6 +2,14 @@
     pageEncoding="UTF-8"%>
     
 <html lang="en">
+<script>
+$(function() {
+	var boardResult = "${boardResult}";
+	if(boardResult == "true") {
+		alert("게시글 등록에 성공하셨습니다.");
+	};
+});
+</script>
 <!-- header 부분 인크루드 -->
 <%@ include file="../include/header.jsp" %>
   <body>

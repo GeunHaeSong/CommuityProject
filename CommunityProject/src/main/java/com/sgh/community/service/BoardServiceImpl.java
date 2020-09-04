@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sgh.community.dao.BoardDao;
+import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
 import com.sgh.community.domain.RegistCategory;
@@ -30,17 +31,27 @@ public class BoardServiceImpl implements BoardService {
 	@Transactional
 	@Override
 	public void insertBoard(RegistVo registVo, String[] boardFile) throws Exception {
-		int board_num = boardDao.getLastBoardNum();
-		int boardFileSize = boardFile.length;
-		for(int i = 0; i < boardFileSize; i++) {
-			String image_name = boardFile[i];
+		int board_num = 0;
+		int boardFileCount = boardFile.length;
+		int main_index = 0;
+		
+		BoardFileVo boardFileVo = new BoardFileVo();
+		
+		// 게시글 쓸때 파일들 파일 테이블에 insert 하기
+		for(int i = 0; i < boardFileCount; i++) {
+			String file_name = boardFile[i];
+			int fileExtensionIndex = file_name.lastIndexOf(".") + 1;
+			String file_extension = file_name.substring(fileExtensionIndex);
 			if(i == 0) {
-				registVo.setBoard_main_image(image_name);
+				registVo.setBoard_main_image(file_name);
 				// 글쓰기
 				boardDao.insertBoard(registVo);
-			} else {
-				boardDao.insertImage(board_num, image_name);
+				board_num = boardDao.getLastBoardNum();
 			}
+			boardFileVo.setBoard_num(board_num);
+			boardFileVo.setFile_name(file_name);
+			boardFileVo.setFile_extension(file_extension);
+			boardDao.insertFile(boardFileVo);
 		}
 	}
 
@@ -54,5 +65,22 @@ public class BoardServiceImpl implements BoardService {
 	@Override
 	public int getBoardTotalCount() throws Exception {
 		return boardDao.getBoardTotalCount();
+	}
+
+	// 선택한 게시글 하나 열기
+	@Override
+	public BoardVo openOneBoard(String board_num) throws Exception {
+		return boardDao.openOneBoard(board_num);
+	}
+
+	// 선택한 게시글의 첨부파일 가져오기
+	@Override
+	public List<BoardFileVo> getOpenBoardFile(String board_num) throws Exception {
+		return boardDao.getOpenBoardFile(board_num);
+	}
+
+	@Override
+	public void openBoardViewUp(String board_num) throws Exception {
+		boardDao.openBoardViewUp(board_num);
 	}
 }

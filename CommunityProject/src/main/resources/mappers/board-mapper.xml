@@ -11,7 +11,7 @@
 		order by category_code asc
 	</select>
 	
-	<!-- 게시판 글 가져오기(삭제되지않은것) -->
+	<!-- 게시판 글 목록 가져오기(삭제되지않은것) -->
 	<select id="getBoardList" resultType="BoardVo">
 		select * from (select rownum rnum, a.* from (select * from tbl_board
 		where category_code = #{category_code} and board_state = 'Y' order by board_num desc) a)
@@ -39,8 +39,26 @@
 	
 	<!-- 이미지 업로드 -->
 	<insert id="insertImage">
-		insert into tbl_image(IMAGE_CODE, BOARD_NUM, IMAGE_NAME)
-		values('BI' || seq_image.nextval, #{board_num}, #{image_name})
+		insert into tbl_file(FILE_CODE, BOARD_NUM, FILE_NAME, FILE_EXTENSION)
+		values('BF' || seq_file.nextval, #{board_num}, #{file_name}, #{file_extension})
 	</insert>
 	
+	<!-- 선택한 게시판 글 하나 열기 -->
+	<select id="openOneBoard" resultType="BoardVo">
+		select * from tbl_board
+		where board_num = #{board_num} and board_state = 'Y'
+	</select>
+	
+	<!-- 선택한 게시판에 있는 첨부파일 열기 -->
+	<select id="getOpenBoardFile" resultType="BoardFileVo">
+		select * from tbl_file
+		where board_num = #{board_num}
+	</select>
+	
+	<!-- 선택한 게시글 조회수 올리기 -->
+	<update id="openBoardViewUp">
+		update tbl_board set
+			board_view = board_view + 1
+		where board_num = #{board_num}
+	</update>
 </mapper>

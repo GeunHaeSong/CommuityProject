@@ -15,12 +15,11 @@ public class UploadFileUtil {
 	public static String fileCopy(String fileName, String uploadPath, byte[] bytes) throws Exception {
 		UUID uuid = UUID.randomUUID();
 		String dirString = makeDir(uploadPath);
-		String fileString = dirString + File.separator + uuid + "_" + fileName;
+		String fileString = dirString + File.separator + uuid + "__" + fileName;
 		String filePath = uploadPath + File.separator + fileString;
 		File fileTaget = new File(filePath);
 		FileCopyUtils.copy(bytes, fileTaget);
 		boolean result = isImage(fileName);
-		System.out.println("result : " + result);
 		if(result == true) { // 확장자가 이미지일 경우만 섬네일 만들기 작업
 			makeThumbnail(filePath);
 		}

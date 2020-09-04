@@ -20,6 +20,7 @@
 	  -webkit-apperance: none;
 	}
 </style>
+<meta charset="utf-8">
 <body>
 <script>
 $(function() {
@@ -53,9 +54,8 @@ function isImage(fileName) {
 
 var tempLength = 0;
 var rearLength = 0;
-//파일 데이터 미리보기 - 여러개
-function loadSubImage(value) {
-	console.log("subImage");
+//파일 업로드 - 여러개
+function uploadFile(value) {
 	$("#movie_sub_image_div > img").remove();
 	var files = value.files;
 	var filesArr = Array.prototype.slice.call(files);
@@ -78,13 +78,24 @@ function loadSubImage(value) {
 			"url" : url,
 			"data" : formData,
 			"success" : function(rData) {
+				// 만든 썸네일 구분하기
+				console.log("rData :" + rData);
 				var slashIndex = rData.lastIndexOf("/");
 				var front = rData.substring(0, slashIndex + 1);
 				var rear = rData.substring(slashIndex + 1);
-				var originalFilename = rData.substring(rData.lastIndexOf("-")+1);
+				var originalFilename = rData.substring(rData.lastIndexOf("__") + 2);
 				var thumbnailName = front + "sm_" + rear;
+				
+				// 확장자 구분하기
+				var extensionIndex = rData.lastIndexOf(".");
+				var extension = rData.substring(extensionIndex + 1);
+				
 				var html = "<div data-fileName='" + rData + "'>";
-				html += "<img src='/freeBoard/displayImage?fileName=" + thumbnailName + "'/><br/>";
+				if(extension == "jpg" || extension == "png" || extension == "gif") {
+					html += "<img src='/freeBoard/displayImage?fileName=" + thumbnailName + "'/><br/>";
+				} else {
+					html += "<img src='/resources/images/fileImage.png' width='50' height='50'/><br/>";
+				}
 				html += "<span>"+originalFilename+"</span>";
 				html += "<a href='"+rData+"' class='attach-del1'><span class='pull-right' style='color:red;'>[삭제]</span></a>";
 				html += "</div>";
@@ -116,9 +127,9 @@ function loadSubImage(value) {
 </script>
 
 <!-- 첨부파일 -->
-<input type="file" class="form-control-file upload" id="image" multiple onchange="loadSubImage(this);" style="display: none" accept="image/*"/>
-<input type="file" class="form-control-file upload" id="file" style="display: none"/>
-<input type="file" class="form-control-file upload" id="movie" style="display: none"/>
+<input type="file" class="form-control-file upload" id="image" multiple onchange="uploadFile(this);" style="display: none" accept="image/*"/>
+<input type="file" class="form-control-file upload" id="file" multiple onchange="uploadFile(this);" style="display: none"/>
+<input type="file" class="form-control-file upload" id="movie" multiple onchange="uploadFile(this);" style="display: none" accept="video/*"/>
 
 <div id="colorlib-page">
 	<a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>

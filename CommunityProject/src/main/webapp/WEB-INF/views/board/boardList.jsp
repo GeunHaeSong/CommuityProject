@@ -26,23 +26,26 @@ $(function() {
 					<c:forEach items="${boardList}" var="BoardVo">
 						<div class="col-md-12">
 							<div class="blog-entry ftco-animate d-md-flex">
-								<a href="single.html" class="img img-2" style="background-image: url(/freeBoard/displayImage?fileName=${BoardVo.board_main_image});"></a>
+								<a href="/freeBoard/boardInfo?board_num=${BoardVo.board_num}" class="img img-2" style="background-image: url(/freeBoard/displayImage?fileName=${BoardVo.board_main_image});"></a>
 								<div class="text text-2 pl-md-4">
-									<h3 class="mb-2"><a href="single.html">${BoardVo.board_title}</a></h3>
+									<h3 class="mb-2">
+										<a href="/freeBoard/boardInfo?board_num=${BoardVo.board_num}" class="btn-custom">${BoardVo.board_title}</a>
+									</h3>
 									<div class="meta-wrap">
 										<p class="meta">
 											<span><i class="icon-calendar mr-2"></i>${BoardVo.board_reg_t}</span>
 											<span><a href="single.html"><i class="icon-folder-o mr-2"></i>${BoardVo.category_code}</a></span>
 											<span><i class="icon-comment2 mr-2"></i>5 Comment</span>
+											<span>조회수 : ${BoardVo.board_view}</span>
 										</p>
 									</div>
 									<p class="mb-4">${BoardVo.board_content}</p>
-									<p><a href="#" class="btn-custom">상세 페이지로<span class="ion-ios-arrow-forward"></span></a></p>
 								</div>
 							</div>
 						</div>
 					</c:forEach>
 					</div>
+					<!-- 페이징 작업 하기 -->
 					<div class="row">
 			          <div class="col text-center text-md-left">
 			            <div class="block-27">

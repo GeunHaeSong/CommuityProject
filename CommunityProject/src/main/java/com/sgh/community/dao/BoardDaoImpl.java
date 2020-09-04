@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
+import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
 import com.sgh.community.domain.RegistCategory;
@@ -35,11 +36,8 @@ public class BoardDaoImpl implements BoardDao {
 
 	// 이미지 업로드
 	@Override
-	public void insertImage(int board_num, String image_name) throws Exception {
-		Map<String, Object> paramMap = new HashMap<String, Object>();
-		paramMap.put("board_num", board_num);
-		paramMap.put("image_name", image_name);
-		sqlSession.insert(NAMESPACE + "insertImage", paramMap);
+	public void insertFile(BoardFileVo boardFileVo) throws Exception {
+		sqlSession.insert(NAMESPACE + "insertImage", boardFileVo);
 	}
 
 	// 가장 최근에 쓴 게시글 번호 들고오기(이미지 업로드에서 사용할 board_num)
@@ -58,5 +56,22 @@ public class BoardDaoImpl implements BoardDao {
 	@Override
 	public int getBoardTotalCount() throws Exception {
 		return sqlSession.selectOne(NAMESPACE + "getBoardTotalCount");
+	}
+
+	// 선택한 게시글 하나 열기
+	@Override
+	public BoardVo openOneBoard(String board_num) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "openOneBoard", board_num);
+	}
+
+	// 선택한 게시글에 있는 첨부파일 가져오기
+	@Override
+	public List<BoardFileVo> getOpenBoardFile(String board_num) throws Exception {
+		return sqlSession.selectList(NAMESPACE + "getOpenBoardFile", board_num);
+	}
+
+	@Override
+	public void openBoardViewUp(String board_num) throws Exception {
+		sqlSession.update(NAMESPACE + "openBoardViewUp", board_num);
 	}
 }

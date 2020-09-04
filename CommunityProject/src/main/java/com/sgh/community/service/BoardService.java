@@ -2,6 +2,7 @@ package com.sgh.community.service;
 
 import java.util.List;
 
+import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
 import com.sgh.community.domain.RegistCategory;
@@ -16,4 +17,10 @@ public interface BoardService {
 	public List<BoardVo> getBoardList(PagingDto pagingDto) throws Exception;
 	// 게시글 전체 수 가져오기(삭제되지않은거)
 	public int getBoardTotalCount() throws Exception;
+	// 선택한 게시글 하나 열기
+	public BoardVo openOneBoard(String board_num) throws Exception;
+	// 선택한 게시글의 첨부파일 가져오기
+	public List<BoardFileVo> getOpenBoardFile(String board_num) throws Exception;
+	// 선택한 게시글 조회수 올리기
+	public void openBoardViewUp(String board_num) throws Exception;
 }

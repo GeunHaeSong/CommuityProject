@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
 import com.sgh.community.domain.RegistCategory;
@@ -35,11 +36,9 @@ public class FreeBoardController {
 	String uploadPath;
 
 	
-	// 자유게시판 목록
+	// 게시판 목록
 	@RequestMapping(value="/boardList", method=RequestMethod.GET)
 	public String freeBoardList(PagingDto pagingDto, @RequestParam("category_code") String category_code, Model model) throws Exception {
-		System.out.println("category_code :" + category_code);
-		System.out.println("pagingDto :" + pagingDto);
 		// 페이징 작업하고 난 후에 그 정보로 게시글 불러오기
 		int totalCount = boardService.getBoardTotalCount();
 		pagingDto.setTotalCount(totalCount);
@@ -81,9 +80,9 @@ public class FreeBoardController {
 		return "redirect:/freeBoard/registForm";
 	}
 	
-	// 이미지 업로드
+	// 파일 업로드
 	@ResponseBody
-	@RequestMapping(value = "/uploadAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/uploadAjax", produces = "application/text; charset=utf8", method = RequestMethod.POST)
 	public String upload(MultipartFile file) throws Exception {
 		String fileName = file.getOriginalFilename();
 		String fileString = UploadFileUtil.fileCopy(fileName, uploadPath, file.getBytes());
@@ -120,5 +119,18 @@ public class FreeBoardController {
 			f2.delete();
 		}
 		return "success";
+	}
+	
+	// 게시글 보기
+	@RequestMapping(value="/boardInfo", method=RequestMethod.GET)
+	public String boardInfo(String board_num, Model model) throws Exception {
+		
+		boardService.openBoardViewUp(board_num);
+		BoardVo boardVo = boardService.openOneBoard(board_num);
+		List<BoardFileVo> boardFileList = boardService.getOpenBoardFile(board_num);
+		
+		model.addAttribute("BoardVo", boardVo);
+		model.addAttribute("BoardFileList", boardFileList);
+		return "board/boardInfo";
 	}
 }

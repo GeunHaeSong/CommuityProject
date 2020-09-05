@@ -1,6 +1,7 @@
 package com.sgh.community.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
@@ -27,4 +28,6 @@ public interface BoardDao {
 	public List<BoardFileVo> getOpenBoardFile(String board_num) throws Exception;
 	// 선택한 게시글 조회수 올리기
 	public void openBoardViewUp(String board_num) throws Exception;
+	// 첨부파일 다운로드
+	public Map<String, Object> fileDown(String file_code) throws Exception;
 }

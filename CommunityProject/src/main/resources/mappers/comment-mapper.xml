@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mappers.comment-mapper">
+	<!-- 해당 게시글의 댓글 목록 -->
+	<select id="commentList" resultType="CommentVo">
+		select * from tbl_comment
+		where board_num = #{board_num}
+		order by comment_reg_t asc
+	</select>
+	
+	<!-- 해당 게시글에 댓글 작성 -->
+	<insert id="insertComment">
+		insert into tbl_comment(COMMENT_NUM, BOARD_NUM, MEMBER_ID, COMMENT_CONTENT)
+		values(seq_comment.nextval, #{board_num}, #{member_id}, #{comment_content})
+	</insert>
+	
+	<!-- 댓글이 작성되면 게시글의 댓글 수 올리기 -->
+	<update id="updateCommentCount">
+		update tbl_board set
+			comment_count = comment_count + 1
+		where board_num = #{board_num}
+	</update>
+</mapper>

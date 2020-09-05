@@ -12,6 +12,7 @@ public class BoardVo {
 	private Timestamp board_modi_t;
 	private Timestamp board_delete_t;
 	private int board_view;
+	private int comment_count;
 	private int board_up;
 	private String board_state;
 	private String board_main_image;
@@ -72,6 +73,12 @@ public class BoardVo {
 	public void setBoard_view(int board_view) {
 		this.board_view = board_view;
 	}
+	public int getComment_count() {
+		return comment_count;
+	}
+	public void setComment_count(int comment_count) {
+		this.comment_count = comment_count;
+	}
 	public int getBoard_up() {
 		return board_up;
 	}
@@ -95,7 +102,7 @@ public class BoardVo {
 		return "BoardVo [board_num=" + board_num + ", category_code=" + category_code + ", member_id=" + member_id
 				+ ", board_title=" + board_title + ", board_content=" + board_content + ", board_reg_t=" + board_reg_t
 				+ ", board_modi_t=" + board_modi_t + ", board_delete_t=" + board_delete_t + ", board_view=" + board_view
-				+ ", board_up=" + board_up + ", board_state=" + board_state + ", board_main_image=" + board_main_image
-				+ "]";
+				+ ", comment_count=" + comment_count + ", board_up=" + board_up + ", board_state=" + board_state
+				+ ", board_main_image=" + board_main_image + "]";
 	}
 }

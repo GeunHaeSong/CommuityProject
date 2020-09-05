@@ -14,20 +14,107 @@
 		color: red;
 		font-size: 25px;
 	}
+	.imageFile {
+		width: 100%;
+		height: auto;
+	}
 </style>
 <!-- header 부분 인크루드 -->
 <%@ include file="../include/header.jsp" %>
+<script src="/resources/js/timeChange.js"></script>
 <script>
 $(function() {
+	
+	// 밀리초 단위를 초단위로 바꾸기
+	var registTime = $("#registTime").text();
+	var timeSeconds = seconds(registTime);
+	$("#registTime").text(timeSeconds);
+	
+	// 첨부파일 앞에 붙는 uuid 부분 지우고 원래의 이름으로 만들기
 	$(".appendingFile").each(function() {
 		var fileName = $(this).text();
 		var doubleUnderbarIndex = fileName.lastIndexOf("__") + 2;
 		var originalFileName = fileName.substring(doubleUnderbarIndex);
 		$(this).text(originalFileName);
 	});
+	
+	// 댓글 목록 가져오기
+	$("#showComments").click(function() {
+		var url = "/comment/commentList";
+		var sendDate = {
+			"board_num" : "${BoardVo.board_num}"
+		};
+		
+		$.get(url, sendDate, function(rData) {
+			$(".comment-list").remove();
+			$.each(rData, function() {
+				var member_id = (this).member_id;
+				var comment_content = (this).comment_content;
+				var comment_reg_t = seconds((this).comment_reg_t);
+				
+				var commentForm = $("#commentForm").clone();
+				commentForm.css("display", "block");
+				commentForm.addClass("comment-list");
+				commentForm.find("#cl_id").text(member_id);
+				commentForm.find("#cl_content").text(comment_content);
+				commentForm.find("#cl_date").text(comment_reg_t);
+				
+				$("#showCommentList").append(commentForm);
+			});
+		});
+	});
+	$("#showComments").trigger("click");
+	
+	// 댓글 작성
+	$("#writeComment").click(function() {
+		var comment_content = $("#comment_content").val();
+		console.log("comment_content :", comment_content);
+		var board_num = "${BoardVo.board_num}";
+		
+		var url = "/comment/writeComment";
+		var sendData = {
+			"comment_content" : comment_content,
+			"board_num" : board_num
+		};
+		
+		$.ajax({
+			"type" : "post",
+			"url" : url,
+			"dataType" : "text",
+			"data" : JSON.stringify(sendData),
+			"headers" : {
+				"Content-Type" : "application/json",
+				"X-HTTP-Method-Override" : "post"
+			},
+			"success" : function(rData) {
+				console.log(rData);
+				$("#showComments").trigger("click");
+			}
+		});
+	});
 });
 </script>
-  <body>
+<body>
+	<!-- 사용자에게 보여주지 않을 것 -->
+	<div>
+		<button type="button" id="showComments" class="btn py-2 px-3 btn-primary" style="display: none;">댓글 목록</button>
+		<div id="commentForm" style="display: none;">
+			<div style="float: left; width: 15%">
+				<span id="cl_id"></span>
+			</div>
+			<div style="float: left; width: 55%">
+				<span id="cl_content"></span>
+			</div>
+			<div style="float: left; width: 25%">
+				<span id="cl_date"></span>
+			</div>
+			<div>
+				<a><span id="comment_delete" style="color: red;">x</span></a>
+			</div>
+			<hr>
+		</div>
+	</div>
+	
 	<div id="colorlib-page">
 		<a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
 		
@@ -40,11 +127,23 @@ $(function() {
 	    		<div class="row d-flex">
 	    			<div class="col-lg-8 px-md-5 py-5">
 	    				<div class="pt-md-4">
+	    					<!-- 게시글 제목 부분 -->
 	    					<h1><span>${BoardVo.board_title}</span></h1>
 	    					<span class="subSpan">${BoardVo.member_id} |</span>
-	    					<span class="subSpan">${BoardVo.board_reg_t} |</span>
-	    					<span class="subSpan">조회 : ${BoardVo.board_view}</span>
+	    					<span class="subSpan" id="registTime">${BoardVo.board_reg_t}</span>
+	    					<span class="subSpan"> | 조회 : ${BoardVo.board_view}</span>
 		            		<hr>
+		            		<!-- 게시글 이미지 부분 -->
+		            		<c:if test="${!empty BoardFileList}">
+            					<c:forEach items="${BoardFileList}" var="BoardFileVo">
+		            				<c:choose>
+			            				<c:when test="${BoardFileVo.file_extension == 'jpg' || BoardFileVo.file_extension == 'png' || BoardFileVo.file_extension == 'gif'}">
+			            					<p><img src="/freeBoard/displayImage?fileName=${BoardFileVo.file_name}" alt="${BoardFileVo.file_name}" class="imageFile"/></p>
+			            				</c:when>
+		            				</c:choose>
+	            				</c:forEach>
+		            		</c:if>
+		            		<!-- 게시글 내용 부분 -->
 	    					<div class="pt-3 mt-3">
 		            			<p class="content">${BoardVo.board_content}</p>
 		            		</div>
@@ -57,10 +156,13 @@ $(function() {
 		            		<!-- 첨부파일 -->
 	    					<div class="mt-5" style="border: 1px solid; border-color: gray;">
 	    						<strong>첨부파일</strong>
+	    						<ul>
 	    						<c:forEach items="${BoardFileList}" var="BoardFileVo">
-		            				<p class="appendingFile">${BoardFileVo.file_name}</p>
+		            				<li><a href="/freeBoard/fileDown?file_code=${BoardFileVo.file_code}" class="appendingFile">${BoardFileVo.file_name}</a></li>
 	    						</c:forEach>
+	    						</ul>
 		            		</div>
+		            		<hr>
 <!-- 	            			네모난 박스 뜨는데 난중에 보고 활용할거 있으면 활용하기 -->
 <!-- 				            <div class="tag-widget post-tag-container mb-5 mt-5"> -->
 <!-- 				              <div class="tagcloud"> -->
@@ -84,49 +186,21 @@ $(function() {
 
 
 					<!-- 댓글 부분 -->
-		            <div class="pt-5 mt-5">
-		              <h3 class="mb-5 font-weight-bold">6 Comments</h3>
-		              <ul class="comment-list">
-
-		                <li class="comment">
-		                  <div class="vcard bio">
-		                    <img src="images/person_1.jpg" alt="Image placeholder">
-		                  </div>
-		                  <div class="comment-body">
-		                    <h3>John Doe</h3>
-		                    <div class="meta">October 03, 2018 at 2:21pm</div>
-		                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Pariatur quidem laborum necessitatibus, ipsam impedit vitae autem, eum officia, fugiat saepe enim sapiente iste iure! Quam voluptas earum impedit necessitatibus, nihil?</p>
-		                    <p><a href="#" class="reply">Reply</a></p>
-		                  </div>
-		                </li>
-		              </ul>
-		              <!-- END comment-list -->
+		            <div>
+		              <span><strong class="mb-5 font-weight-bold" style="font-size: 25px;">${BoardVo.comment_count} 댓글</strong></span>
+		              <hr>
+		              <div id="showCommentList"></div>
 		              
 		              <!-- 댓글다는 부분 -->
 		              <div class="comment-form-wrap pt-5">
-		                <h3 class="mb-5">Leave a comment</h3>
 		                <form action="#" class="p-3 p-md-5 bg-light">
 		                  <div class="form-group">
-		                    <label for="name">Name *</label>
-		                    <input type="text" class="form-control" id="name">
+		                    <label for="message">댓글 내용</label>
+		                    <textarea id="comment_content" maxlength="200" class="form-control"></textarea>
 		                  </div>
 		                  <div class="form-group">
-		                    <label for="email">Email *</label>
-		                    <input type="email" class="form-control" id="email">
+		                    <button type="button" id="writeComment" class="btn py-3 px-4 btn-primary">댓글 작성</button>
 		                  </div>
-		                  <div class="form-group">
-		                    <label for="website">Website</label>
-		                    <input type="url" class="form-control" id="website">
-		                  </div>
-
-		                  <div class="form-group">
-		                    <label for="message">Message</label>
-		                    <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
-		                  </div>
-		                  <div class="form-group">
-		                    <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
-		                  </div>
-
 		                </form>
 		              </div>
 		            </div>

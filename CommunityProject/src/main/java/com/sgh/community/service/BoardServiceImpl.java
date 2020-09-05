@@ -1,6 +1,7 @@
 package com.sgh.community.service;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -33,7 +34,6 @@ public class BoardServiceImpl implements BoardService {
 	public void insertBoard(RegistVo registVo, String[] boardFile) throws Exception {
 		int board_num = 0;
 		int boardFileCount = boardFile.length;
-		int main_index = 0;
 		
 		BoardFileVo boardFileVo = new BoardFileVo();
 		
@@ -79,8 +79,15 @@ public class BoardServiceImpl implements BoardService {
 		return boardDao.getOpenBoardFile(board_num);
 	}
 
+	// 조회수 올리기
 	@Override
 	public void openBoardViewUp(String board_num) throws Exception {
 		boardDao.openBoardViewUp(board_num);
+	}
+
+	// 첨부파일 다운로드
+	@Override
+	public Map<String, Object> fileDown(String file_code) throws Exception {
+		return boardDao.fileDown(file_code);
 	}
 }

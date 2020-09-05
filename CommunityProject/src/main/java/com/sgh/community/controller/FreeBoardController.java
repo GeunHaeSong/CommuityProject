@@ -2,12 +2,17 @@ package com.sgh.community.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -82,12 +87,34 @@ public class FreeBoardController {
 	
 	// 파일 업로드
 	@ResponseBody
-	@RequestMapping(value = "/uploadAjax", produces = "application/text; charset=utf8", method = RequestMethod.POST)
+	@RequestMapping(value="/uploadAjax", produces="application/text; charset=utf8", method=RequestMethod.POST)
 	public String upload(MultipartFile file) throws Exception {
 		String fileName = file.getOriginalFilename();
 		String fileString = UploadFileUtil.fileCopy(fileName, uploadPath, file.getBytes());
 		String fileReplaceChangeName = fileString.replace("\\", "/");
 		return fileReplaceChangeName;
+	}
+	
+	// 파일 다운로드
+	@RequestMapping(value="/fileDown", method=RequestMethod.GET)
+	public void fileDown(String file_code, HttpServletResponse response) throws Exception {
+		Map<String, Object> resultMap = boardService.fileDown(file_code);
+		// DB에 저장된 파일 이름
+		String storedFileName = (String)resultMap.get("FILE_NAME");
+		// 원본 이름
+		int uuidIndex = storedFileName.lastIndexOf("__") + 2;
+		String originalFileName = storedFileName.substring(uuidIndex);
+		String filePath = uploadPath + "/" + storedFileName;
+		
+		// 다운로드
+		byte[] fileByte = FileUtils.readFileToByteArray(new File(filePath));
+		response.setContentType("application/octet-stream");
+		response.setContentLength(fileByte.length);
+		response.setHeader("Content-Disposition", "attachment; fileName=\"" + URLEncoder.encode(originalFileName, "UTF-8") + "\";");
+		response.setHeader("Content-Transfer-Encoding", "binary");
+		response.getOutputStream().write(fileByte);
+		response.getOutputStream().flush();
+		response.getOutputStream().close();
 	}
 	
 	// 이미지 미리보기
@@ -124,7 +151,6 @@ public class FreeBoardController {
 	// 게시글 보기
 	@RequestMapping(value="/boardInfo", method=RequestMethod.GET)
 	public String boardInfo(String board_num, Model model) throws Exception {
-		
 		boardService.openBoardViewUp(board_num);
 		BoardVo boardVo = boardService.openOneBoard(board_num);
 		List<BoardFileVo> boardFileList = boardService.getOpenBoardFile(board_num);

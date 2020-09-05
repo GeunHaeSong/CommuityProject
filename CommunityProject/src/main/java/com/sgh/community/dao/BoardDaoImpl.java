@@ -1,6 +1,5 @@
 package com.sgh.community.dao;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,8 +69,15 @@ public class BoardDaoImpl implements BoardDao {
 		return sqlSession.selectList(NAMESPACE + "getOpenBoardFile", board_num);
 	}
 
+	// 조회수 올리기
 	@Override
 	public void openBoardViewUp(String board_num) throws Exception {
 		sqlSession.update(NAMESPACE + "openBoardViewUp", board_num);
+	}
+
+	// 첨부파일 다운로드
+	@Override
+	public Map<String, Object> fileDown(String file_code) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "fileDown", file_code);
 	}
 }

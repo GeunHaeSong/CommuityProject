@@ -5,12 +5,20 @@
 <html lang="en">
 <!-- header 부분 인크루드 -->
 <%@ include file="../include/header.jsp" %>
+<script src="/resources/js/timeChange.js"></script>
 <script>
 $(function() {
 	var boardResult = "${boardResult}";
 	if(boardResult == "true") {
 		alert("성공적으로 글을 작성하셨습니다.");
 	}
+	
+	// 밀리초 단위를 초 단위로 변경
+	$(".registTime").each(function() {
+		var registTime = $(this).text();
+		var timeSeconds = seconds(registTime);
+		$(this).text(timeSeconds);
+	});
 });
 </script>
   <body>
@@ -33,9 +41,9 @@ $(function() {
 									</h3>
 									<div class="meta-wrap">
 										<p class="meta">
-											<span><i class="icon-calendar mr-2"></i>${BoardVo.board_reg_t}</span>
+											<i class="icon-calendar mr-2"></i><span class="registTime">${BoardVo.board_reg_t}</span>
 											<span><a href="single.html"><i class="icon-folder-o mr-2"></i>${BoardVo.category_code}</a></span>
-											<span><i class="icon-comment2 mr-2"></i>5 Comment</span>
+											<span><i class="icon-comment2 mr-2"></i>${BoardVo.comment_count} 댓글</span>
 											<span>조회수 : ${BoardVo.board_view}</span>
 										</p>
 									</div>

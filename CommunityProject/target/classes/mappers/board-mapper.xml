@@ -37,22 +37,10 @@
         where rnum = 1
 	</select>
 	
-	<!-- 이미지 업로드 -->
-	<insert id="insertImage">
-		insert into tbl_file(FILE_CODE, BOARD_NUM, FILE_NAME, FILE_EXTENSION)
-		values('BF' || seq_file.nextval, #{board_num}, #{file_name}, #{file_extension})
-	</insert>
-	
 	<!-- 선택한 게시판 글 하나 열기 -->
 	<select id="openOneBoard" resultType="BoardVo">
 		select * from tbl_board
 		where board_num = #{board_num} and board_state = 'Y'
-	</select>
-	
-	<!-- 선택한 게시판에 있는 첨부파일 열기 -->
-	<select id="getOpenBoardFile" resultType="BoardFileVo">
-		select * from tbl_file
-		where board_num = #{board_num}
 	</select>
 	
 	<!-- 선택한 게시글 조회수 올리기 -->
@@ -61,4 +49,22 @@
 			board_view = board_view + 1
 		where board_num = #{board_num}
 	</update>
+	
+	<!-- 이미지 업로드 -->
+	<insert id="insertImage">
+		insert into tbl_file(FILE_CODE, BOARD_NUM, FILE_NAME, FILE_EXTENSION)
+		values('BF' || seq_file.nextval, #{board_num}, #{file_name}, #{file_extension})
+	</insert>
+	
+	<!-- 선택한 게시판에 있는 첨부파일 목록 -->
+	<select id="getOpenBoardFile" resultType="BoardFileVo">
+		select * from tbl_file
+		where board_num = #{board_num}
+	</select>
+	
+	<!-- 첨부파일 다운로드 Map 사용해보기 -->
+	<select id="fileDown" parameterType="hashMap" resultType="hashMap">
+		select * from tbl_file
+		where file_code = #{file_code}
+	</select>
 </mapper>

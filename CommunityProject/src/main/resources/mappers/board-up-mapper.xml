@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mappers.board-up-mapper">
+	<!-- 나중에 기록 남기고 싶으면 테이블 하나 더 만들어서 first와 seconds를 구분해서 좋아요한 시간과 삭제 기록 남기면 될듯 -->
+
+	<!-- 게시글 좋아요 숫자 들고오기 -->
+	<select id="selectBoardUpTotal" resultType="int">
+		select board_up from tbl_board
+		where board_num = #{board_num}
+	</select>
+
+	<!-- 게시글 좋아요를 눌렀는지 확인, 있으면 1, 없으면 0 -->
+	<select id="boardUpCheck" resultType="int">
+		select count(*) from tbl_board_up
+		where board_num = #{board_num} and member_id = #{member_id}
+	</select>
+	
+	<!-- 게시글 좋아요 처음 눌렀을 경우 -->
+	<insert id="firstUp">
+		insert into tbl_board_up(BOARD_UP_NO, BOARD_NUM, MEMBER_ID)
+		values(seq_board_up.nextval, #{board_num}, #{member_id})
+	</insert>
+	
+	<!-- 게시글 좋아요 + 1 -->
+	<update id="boardUpPlus">
+		update tbl_board set
+			board_up = board_up + 1
+		where board_num = #{board_num}
+	</update>
+	
+	<!-- 게시글 좋아요 다시 눌렀을 경우 -->
+	<delete id="secondUp">
+		delete 
+		from tbl_board_up
+		where board_num = #{board_num} and member_id = #{member_id}
+	</delete>
+	
+	<!-- 게시글 좋아요 - 1 -->
+	<update id="boardUpMinus">
+		update tbl_board set
+			board_up = board_up - 1
+		where board_num = #{board_num}
+	</update>
+</mapper>

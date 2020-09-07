@@ -6,14 +6,14 @@ import java.util.Map;
 import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
-import com.sgh.community.domain.RegistCategory;
-import com.sgh.community.domain.RegistVo;
+import com.sgh.community.domain.CategoryVo;
+import com.sgh.community.domain.WriteModifyVo;
 
 public interface BoardService {
 	// 게시글 쓸때 보여주는 카테고리 목록 가져오기
-	public List<RegistCategory> getCategory() throws Exception;
+	public List<CategoryVo> getCategory() throws Exception;
 	// 게시글 글쓰기
-	public void insertBoard(RegistVo registVo, String[] boardFile) throws Exception;
+	public void insertBoard(WriteModifyVo registVo, String[] boardFile) throws Exception;
 	// 게시글 가져오기(삭제되지않은거)
 	public List<BoardVo> getBoardList(PagingDto pagingDto) throws Exception;
 	// 게시글 전체 수 가져오기(삭제되지않은거)
@@ -26,4 +26,8 @@ public interface BoardService {
 	public void openBoardViewUp(String board_num) throws Exception;
 	// 첨부파일 다운로드
 	public Map<String, Object> fileDown(String file_code) throws Exception;
+	// 게시글 수정
+	public void updateBoard(WriteModifyVo writeModifyVo, String[] boardFile, String[] delFileCode) throws Exception;
+	// 게시글 삭제
+	public void deleteBoard(Map<String, Object> deleteBoardMap) throws Exception;
 }

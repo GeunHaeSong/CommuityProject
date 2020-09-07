@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
-import com.sgh.community.domain.RegistCategory;
-import com.sgh.community.domain.RegistVo;
+import com.sgh.community.domain.CategoryVo;
+import com.sgh.community.domain.WriteModifyVo;
 
 @Repository
 public class BoardDaoImpl implements BoardDao {
@@ -23,20 +23,20 @@ public class BoardDaoImpl implements BoardDao {
 	
 	// 글쓸때 보여주는 카테고리 목록 가져오기
 	@Override
-	public List<RegistCategory> getCategory() throws Exception {
+	public List<CategoryVo> getCategory() throws Exception {
 		return sqlSession.selectList(NAMESPACE + "getCategory");
 	}
 
 	// 게시글 쓰기
 	@Override
-	public void insertBoard(RegistVo registVo) throws Exception {
+	public void insertBoard(WriteModifyVo registVo) throws Exception {
 		sqlSession.insert(NAMESPACE + "insertBoard", registVo);
 	}
 
 	// 이미지 업로드
 	@Override
 	public void insertFile(BoardFileVo boardFileVo) throws Exception {
-		sqlSession.insert(NAMESPACE + "insertImage", boardFileVo);
+		sqlSession.insert(NAMESPACE + "insertFile", boardFileVo);
 	}
 
 	// 가장 최근에 쓴 게시글 번호 들고오기(이미지 업로드에서 사용할 board_num)
@@ -79,5 +79,29 @@ public class BoardDaoImpl implements BoardDao {
 	@Override
 	public Map<String, Object> fileDown(String file_code) throws Exception {
 		return sqlSession.selectOne(NAMESPACE + "fileDown", file_code);
+	}
+
+	// 첨부파일 다운로드 횟수 증가
+	@Override
+	public void downPlusFile(Map<String, Object> downPlusFileMap) throws Exception {
+		sqlSession.update(NAMESPACE + "downPlusFile", downPlusFileMap);
+	}
+
+	// 첨부파일 삭제
+	@Override
+	public void deleteFile(String file_code) throws Exception {
+		sqlSession.update(NAMESPACE + "deleteFile", file_code);
+	}
+
+	// 게시글 수정
+	@Override
+	public void updateBoard(WriteModifyVo writeModifyVo) throws Exception {
+		sqlSession.update(NAMESPACE + "updateBoard", writeModifyVo);
+	}
+
+	// 게시글 삭제
+	@Override
+	public void deleteBoard(Map<String, Object> deleteBoardMap) throws Exception {
+		sqlSession.update(NAMESPACE + "deleteBoard", deleteBoardMap);
 	}
 }

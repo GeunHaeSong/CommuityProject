@@ -33,4 +33,24 @@ public class CommentServiceImpl implements CommentService {
 		commentDao.updateCommentCount(board_num);
 	}
 
+	// 트랜잭션
+	// 댓글이 삭제되면 댓글 삭제시키고, 게시글의 댓글 수 감소
+	@Transactional
+	@Override
+	public void deleteComment(Map<String, Object> deleteCommentMap) throws Exception {
+		String board_num = (String)deleteCommentMap.get("board_num");
+		commentDao.deleteComment(deleteCommentMap);
+		commentDao.deleteCommentCount(board_num);
+	}
+
+	// 댓글 수정
+	@Override
+	public void modifyComment(Map<String, Object> modifyCommentMap) throws Exception {
+		commentDao.modifyComment(modifyCommentMap);
+	}
+
+	@Override
+	public int totalComment(String board_num) throws Exception {
+		return commentDao.totalComment(board_num);
+	}
 }

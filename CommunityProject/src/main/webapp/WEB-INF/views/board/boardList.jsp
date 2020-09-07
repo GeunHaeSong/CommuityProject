@@ -41,10 +41,20 @@ $(function() {
 									</h3>
 									<div class="meta-wrap">
 										<p class="meta">
-											<i class="icon-calendar mr-2"></i><span class="registTime">${BoardVo.board_reg_t}</span>
+											<i class="icon-calendar mr-2"></i>
+											<c:choose>
+												<c:when test="${not empty BoardVo.board_modi_t}">
+													<span class="registTime">${BoardVo.board_modi_t}</span>
+													<span>(수정)</span>
+												</c:when>
+												<c:otherwise>
+													<span class="registTime">${BoardVo.board_reg_t}</span>
+												</c:otherwise>
+											</c:choose>
 											<span><a href="single.html"><i class="icon-folder-o mr-2"></i>${BoardVo.category_code}</a></span>
 											<span><i class="icon-comment2 mr-2"></i>${BoardVo.comment_count} 댓글</span>
-											<span>조회수 : ${BoardVo.board_view}</span>
+											<span>${BoardVo.board_view} 조회수</span>
+											<span>${BoardVo.board_up} 좋아요</span>
 										</p>
 									</div>
 									<p class="mb-4">${BoardVo.board_content}</p>

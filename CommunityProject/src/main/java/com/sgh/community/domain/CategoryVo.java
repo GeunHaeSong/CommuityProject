@@ -1,10 +1,10 @@
 package com.sgh.community.domain;
 
-public class RegistCategory {
+public class CategoryVo {
 	// 글쓰기에서 보여주는 카테고리 메뉴 목록 가져오기
 	private String category_code;
 	private String category_name;
-	public RegistCategory() {
+	public CategoryVo() {
 		super();
 	}
 	public String getCategory_code() {
@@ -21,6 +21,6 @@ public class RegistCategory {
 	}
 	@Override
 	public String toString() {
-		return "RegistCategory [category_code=" + category_code + ", category_name=" + category_name + "]";
+		return "CategoryVo [category_code=" + category_code + ", category_name=" + category_name + "]";
 	}
 }

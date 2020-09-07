@@ -3,6 +3,7 @@ package com.sgh.community.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,9 +26,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
-import com.sgh.community.domain.RegistCategory;
-import com.sgh.community.domain.RegistVo;
+import com.sgh.community.domain.CategoryVo;
+import com.sgh.community.domain.WriteModifyVo;
 import com.sgh.community.service.BoardService;
+import com.sgh.community.service.BoardUpService;
 import com.sgh.community.util.UploadFileUtil;
 
 @Controller
@@ -37,6 +38,8 @@ public class FreeBoardController {
 
 	@Inject
 	private BoardService boardService;
+	@Inject
+	private BoardUpService boardUpService;
 	@Resource
 	String uploadPath;
 
@@ -62,19 +65,19 @@ public class FreeBoardController {
 	// 자유게시판 글쓰기 폼
 	@RequestMapping(value="/registForm", method=RequestMethod.GET)
 	public String registForm(Model model) throws Exception {
-		List<RegistCategory> categoryList =  boardService.getCategory();
+		List<CategoryVo> categoryList =  boardService.getCategory();
 		model.addAttribute("categoryList", categoryList);
 		return "board/boardRegist";
 	}
 	
 	// 자유게시판 글쓰기 처리
 	@RequestMapping(value="registRun", method=RequestMethod.GET)
-	public String registRun(RegistVo registVo, String[] boardFile, RedirectAttributes rttr, HttpSession session) {
+	public String registRun(WriteModifyVo writeModifyVo, String[] boardFile, RedirectAttributes rttr, HttpSession session) {
 		try {
-			String category_code = registVo.getCategory_code();
+			String category_code = writeModifyVo.getCategory_code();
 			String member_id = (String)session.getAttribute("member_id");
-			registVo.setMember_id(member_id);
-			boardService.insertBoard(registVo, boardFile);
+			writeModifyVo.setMember_id(member_id);
+			boardService.insertBoard(writeModifyVo, boardFile);
 			rttr.addFlashAttribute("boardResult", "true");
 			rttr.addAttribute("category_code", category_code);
 			return "redirect:/freeBoard/boardList";
@@ -158,5 +161,78 @@ public class FreeBoardController {
 		model.addAttribute("BoardVo", boardVo);
 		model.addAttribute("BoardFileList", boardFileList);
 		return "board/boardInfo";
+	}
+	
+	// 게시글 수정
+	@RequestMapping(value="/updateBoard", method=RequestMethod.GET)
+	public String modifyForm(String board_num, Model model) throws Exception {
+		List<CategoryVo> categoryList =  boardService.getCategory();
+		BoardVo boardVo = boardService.openOneBoard(board_num);
+		List<BoardFileVo> boardFileList = boardService.getOpenBoardFile(board_num);
+		
+		model.addAttribute("BoardVo", boardVo);
+		model.addAttribute("boardFileList", boardFileList);
+		model.addAttribute("categoryList", categoryList);
+		return "board/updateBoard";
+	}
+	
+	// 게시글 수정 처리
+	@RequestMapping(value="/updateBoardRun", method=RequestMethod.GET)
+	public String updateBoardRun(WriteModifyVo writeModifyVo, String[] boardFile, String[] delFileCode, RedirectAttributes rttr, HttpSession session) throws Exception {
+		String member_id = (String)session.getAttribute("member_id");
+		writeModifyVo.setMember_id(member_id);
+		int board_num = writeModifyVo.getBoard_num();
+		boardService.updateBoard(writeModifyVo, boardFile, delFileCode);
+		return "redirect:/freeBoard/boardInfo?board_num=" + board_num;
+	}
+	
+	
+	// 게시글 삭제
+	@RequestMapping(value="/deleteBoardRun", method=RequestMethod.GET)
+	public String deleteBoardRun(String category_code, int board_num, HttpSession session) throws Exception {
+		Map<String, Object> deleteBoardMap = new HashMap<String, Object>();
+		String member_id = (String)session.getAttribute("member_id");
+		deleteBoardMap.put("member_id", member_id);
+		deleteBoardMap.put("board_num", board_num);
+		System.out.println("deleteBoardMap : " + deleteBoardMap);
+		boardService.deleteBoard(deleteBoardMap);
+		return "redirect:/freeBoard/boardList?category_code=" + category_code;
+	}
+	
+	// ------------ 게시글 좋아요 관련 ----------------
+	
+	@ResponseBody
+	@RequestMapping(value="/boardUp", method=RequestMethod.GET)
+	public int boardUp(String board_num, HttpSession session) throws Exception {
+		Map<String, Object> boardUpMap = new HashMap<String, Object>();
+		String member_id = (String)session.getAttribute("member_id");
+		boardUpMap.put("board_num", board_num);
+		boardUpMap.put("member_id", member_id);
+		
+		int checkResult = boardUpService.boardUpCheck(boardUpMap);
+		if(checkResult == 0) {
+			boardUpService.firstUp(boardUpMap);
+		} else {
+			boardUpService.secondUp(boardUpMap);
+		}
+		
+		return boardUpService.selectBoardUpTotal(board_num);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/boardUpCheck", method=RequestMethod.GET)
+	public int boardUpCheck(String board_num, HttpSession session) {
+		// return 값이 0이면 좋아요 클릭 안함, 1이면 좋아요 클릭함, 2면 로그인을 하지 않은 상태
+		try {
+			Map<String, Object> boardUpMap = new HashMap<String, Object>();
+			String member_id = (String)session.getAttribute("member_id");
+			boardUpMap.put("board_num", board_num);
+			boardUpMap.put("member_id", member_id);
+			return boardUpService.boardUpCheck(boardUpMap);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return 2;
 	}
 }

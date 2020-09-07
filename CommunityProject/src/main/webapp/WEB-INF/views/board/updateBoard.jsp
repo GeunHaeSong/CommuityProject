@@ -30,16 +30,75 @@ $(function() {
 		alert("게시글 등록에 실패하였습니다.");
 	};
 	
-	$("#registForm").submit(function() {
+	$(".displayThumbnail").each(function() {
+		var fileName = $(this).parent().attr("data-fileName");
+		var slashIndex = fileName.lastIndexOf("/");
+		var front = fileName.substring(0, slashIndex + 1);
+		var rear = fileName.substring(slashIndex + 1);
+		// 원래 파일 이름 사용할 일 있으면 나중에 사용하기
+		var thumbnailName = front + "sm_" + rear;
+		$(this).attr("src", "/freeBoard/displayImage?fileName=" + thumbnailName);
+	});
+	
+	// 전송하기
+	$("#updateForm").submit(function() {
 		var category = $("#category option:selected").val();
 		var categoryHidden = "<input type='hidden' name='category_code' value='"+category+"'>";
-		$("#registForm").prepend(categoryHidden);
+		$("#updateForm").prepend(categoryHidden);
 		
 		var upDiv = $("#choiceFile > div");
 		upDiv.each(function(index) {
 			var fileName = $(this).attr("data-fileName");
 			var hiddenInput = "<input type='hidden' name='boardFile' value='"+fileName+"'/>";
-			$("#registForm").prepend(hiddenInput);
+			$("#updateForm").prepend(hiddenInput);
+		});
+	});
+	
+	// 새로 추가한 이미지 지우기
+	$("#choiceFile").on("click", ".attach-del", function(e) {
+		tempLength = -1;
+		e.preventDefault();
+		
+		var removeDiv = $(this).parent();
+		var fileName = $(this).attr("href");
+		var url = "/freeBoard/deleteImage";
+		var sendData = {"fileName" : fileName};
+		$.ajax({
+			"type" : "get",
+			"url" : url,
+			"data" : sendData,
+			"success" : function(rData) {
+				var check = rearLength+tempLength;
+				rearLength = check;
+				tempLength = 0;
+				removeDiv.remove();
+			}
+		});
+	});
+	
+	// 원래 있던 이미지 지우기
+	$("#originalBoardFile").on("click", ".attach-del", function(e) {
+		tempLength = -1;
+		e.preventDefault();
+		
+		var fileCode = $(this).attr("data-fileCode");
+		var fileCodeHidden = "<input type='hidden' name='delFileCode' value='"+fileCode+"'/>";
+		$("#updateForm").prepend(fileCodeHidden);
+		
+		var removeDiv = $(this).parent();
+		var fileName = $(this).attr("href");
+		var url = "/freeBoard/deleteImage";
+		var sendData = {"fileName" : fileName};
+		$.ajax({
+			"type" : "get",
+			"url" : url,
+			"data" : sendData,
+			"success" : function(rData) {
+				var check = rearLength+tempLength;
+				rearLength = check;
+				tempLength = 0;
+				removeDiv.remove();
+			}
 		});
 	});
 });
@@ -79,6 +138,7 @@ function uploadFile(value) {
 			"data" : formData,
 			"success" : function(rData) {
 				// 만든 썸네일 구분하기
+				console.log("rData :" + rData);
 				var slashIndex = rData.lastIndexOf("/");
 				var front = rData.substring(0, slashIndex + 1);
 				var rear = rData.substring(slashIndex + 1);
@@ -102,26 +162,6 @@ function uploadFile(value) {
 			}
 		});	
 	});
-	// 이미지 지우기
-	$("#colorlib-main").on("click", ".attach-del1", function(e) {
-		tempLength = -1;
-		e.preventDefault();
-		var removeDiv = $(this).parent();
-		var fileName = $(this).attr("href");
-		var url = "/freeBoard/deleteImage";
-		var sendData = {"fileName" : fileName};
-		$.ajax({
-			"type" : "get",
-			"url" : url,
-			"data" : sendData,
-			"success" : function(rData) {
-				var check = rearLength+tempLength;
-				rearLength = check;
-				tempLength = 0;
-				removeDiv.remove();
-			}
-		});
-	});
 }
 </script>
 
@@ -139,38 +179,21 @@ function uploadFile(value) {
       <div class="container">
         <div class="row d-flex mb-5 contact-info">
           <div class="col-md-12 mb-4">
-            <h2 class="h3">게시글 작성하기</h2>
+            <h2 class="h3">게시글 수정하기</h2>
           </div>
-          <!-- 상단에 이미지 넣을려고 했는데 애매해서 일단 주석 처리, 나중에 여유되면 해보기 -->
-<!-- 	          <div class="w-100"></div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView0"></p> 파일이나 이미지 들어갈거 넣기 -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView1"></p> -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView2"></p> -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView3"></p> -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
         </div>
         <div class="row block-9">
           <div class="col-lg-9 d-flex">
-            <form id="registForm" action="/freeBoard/registRun" class="bg-light p-5 contact-form" method="get">
+            <form id="updateForm" action="/freeBoard/updateBoardRun" class="bg-light p-5 contact-form" method="get">
+            	<input type="hidden" name="board_num" value="${BoardVo.board_num}"/>
 	            <div class="form-group">
 	              <select id="category">
 	              <c:forEach items="${categoryList}" var="CategoryVo">
-	              	<option value="${CategoryVo.category_code}">${CategoryVo.category_name}</option>
+	              	<option value="${CategoryVo.category_code}"
+	              	<c:if test="${BoardVo.category_code == CategoryVo.category_code}">
+	              		selected
+	              	</c:if>
+	              	>${CategoryVo.category_name}</option>
 	              </c:forEach>
 	              </select>
 	            </div>
@@ -179,13 +202,34 @@ function uploadFile(value) {
 		            <label class="atc_input" for="file">파일</label>
 		            <label class="atc_input" for="movie">동영상</label>
 	            </div>
+	            <!-- 원래 글에 있는 파일 -->
+	            <div id="originalBoardFile">
+	            	<c:forEach items="${boardFileList}" var="BoardFileVo">
+	            		<div data-fileName="${BoardFileVo.file_name}">
+	            			<c:choose>
+		            			<c:when test="${BoardFileVo.file_extension == 'jpg' || BoardFileVo.file_extension == 'png' || BoardFileVo.file_extension == 'gif'}">
+									<img src="/freeBoard/displayImage?fileName=${BoardFileVo.file_name}" class="displayThumbnail"/>
+								</c:when>
+								<c:otherwise>
+									<img src="/resources/images/fileImage.png" width='50' height='50'/>
+								</c:otherwise>
+							</c:choose>
+							<br>
+							<span>${BoardFileVo.file_name}</span>
+							<a href="/#" class="attach-del" data-fileCode="${BoardFileVo.file_code}">
+								<span class="pull-right" style="color:red;">[삭제]</span>
+							</a>
+						</div>
+	            	</c:forEach>
+	            </div>
+	            <!-- 새로 추가한 파일 -->
 	            <div id="choiceFile">
 	            </div>
 	            <div class="form-group">
-	            	<input type="text" class="form-control" name="board_title" placeholder="제목">
+	            	<input type="text" class="form-control" name="board_title" placeholder="제목" value="${BoardVo.board_title}">
 	            </div>
 	            <div class="form-group">
-	            	<textarea name="board_content" cols="100" rows="15" placeholder="내용을 입력해주세요."></textarea>
+	            	<textarea name="board_content" cols="100" rows="15" placeholder="내용을 입력해주세요.">${BoardVo.board_content }</textarea>
 	            </div>
 	            <div class="form-group">
 		            <input type="submit" value="작성하기" class="btn btn-primary py-3 px-5">

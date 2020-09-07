@@ -7,7 +7,7 @@
 	<!-- 해당 게시글의 댓글 목록 -->
 	<select id="commentList" resultType="CommentVo">
 		select * from tbl_comment
-		where board_num = #{board_num}
+		where board_num = #{board_num} and comment_state = 'Y'
 		order by comment_reg_t asc
 	</select>
 	
@@ -23,4 +23,34 @@
 			comment_count = comment_count + 1
 		where board_num = #{board_num}
 	</update>
+	
+	<!-- 댓글이 삭제되면 게시글의 댓글 수 줄이기 -->
+	<update id="deleteCommentCount">
+		update tbl_board set
+			comment_count = comment_count - 1
+		where board_num = #{board_num}
+	</update>
+	
+	<!-- 댓글 수정 -->
+	<update id="modifyComment">
+		update tbl_comment set
+			comment_content = #{comment_content},
+			comment_modi_t = sysdate
+		where comment_num = #{comment_num} and member_id = #{member_id}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<update id="deleteComment">
+		update tbl_comment set
+			comment_state = 'N',
+			comment_delete_t = sysdate
+		where comment_num = #{comment_num} and member_id = #{member_id}
+	</update>
+	
+	<!-- 게시글의 댓글 수 가져오기 -->
+	<select id="totalComment" resultType="int">
+		select comment_count
+		from tbl_board
+		where board_num = #{board_num}
+	</select>
 </mapper>

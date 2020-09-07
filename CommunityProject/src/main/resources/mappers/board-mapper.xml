@@ -5,7 +5,7 @@
   
 <mapper namespace="mappers.board-mapper">
 	<!-- 게시판 글 쓸때 삭제되지 않은 카테고리 가져오기 -->
-	<select id="getCategory" resultType="RegistCategory">
+	<select id="getCategory" resultType="CategoryVo">
 		select category_code, category_name from tbl_category
 		where category_state = 'Y'
 		order by category_code asc
@@ -26,9 +26,53 @@
 	
 	<!-- 게시판 글쓰기 -->
 	<insert id="insertBoard">
-		insert into tbl_board(BOARD_NUM, CATEGORY_CODE, MEMBER_ID, BOARD_TITLE, BOARD_CONTENT, BOARD_MAIN_IMAGE)
-		values(seq_board.nextval, #{category_code}, #{member_id}, #{board_title}, #{board_content}, #{board_main_image})
+		insert into tbl_board(BOARD_NUM, CATEGORY_CODE, MEMBER_ID, BOARD_TITLE, BOARD_CONTENT
+		<if test="board_main_image != null">
+		, BOARD_MAIN_IMAGE
+		</if>
+		)
+		values(seq_board.nextval, #{category_code}, #{member_id}, #{board_title}, #{board_content}
+		<if test="board_main_image != null">
+		, #{board_main_image}
+		</if>
+		)
 	</insert>
+	
+	<!-- 게시글 수정 -->
+	<update id="updateBoard">
+		update tbl_board set
+			category_code = #{category_code},
+		    board_title = #{board_title},
+		    board_content = #{board_content},
+		    <if test="board_main_image != null">
+		    board_main_image = #{board_main_image},
+		    </if>
+		    board_modi_t = sysdate
+		 where board_num = #{board_num} and member_id = #{member_id}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<update id="deleteBoard">
+		update tbl_board set
+		    board_state = 'N',
+		    board_delete_t = sysdate
+		where board_num = #{board_num} and member_id = #{member_id}
+	</update>
+	
+	<!-- 첨부파일 다운로드 횟수 + 1 -->
+	<update id="downPlusFile">
+		update tbl_file set
+			file_down_count = #{file_down_count}
+		where file_code = #{file_code}
+	</update>
+	
+	<!-- 첨부파일 삭제-->
+	<update id="deleteFile">
+		update tbl_file set
+		    file_state = 'N',
+		    file_del_t = sysdate
+		where file_code = #{file_code}
+	</update>
 	
 	<!-- 게시판 제일 최근 숫자 들고오기(이미지 업로드에서 board_num 구하기) -->
 	<select id="getLastBoardNum" resultType="integer">
@@ -39,8 +83,9 @@
 	
 	<!-- 선택한 게시판 글 하나 열기 -->
 	<select id="openOneBoard" resultType="BoardVo">
-		select * from tbl_board
-		where board_num = #{board_num} and board_state = 'Y'
+		select b.*, c.category_name  from tbl_board b, tbl_category c
+		where b.board_num = #{board_num} and b.board_state = 'Y' and
+		b.category_code = c.category_code
 	</select>
 	
 	<!-- 선택한 게시글 조회수 올리기 -->
@@ -50,21 +95,21 @@
 		where board_num = #{board_num}
 	</update>
 	
-	<!-- 이미지 업로드 -->
-	<insert id="insertImage">
-		insert into tbl_file(FILE_CODE, BOARD_NUM, FILE_NAME, FILE_EXTENSION)
-		values('BF' || seq_file.nextval, #{board_num}, #{file_name}, #{file_extension})
+	<!-- 첨부파일 추가 -->
+	<insert id="insertFile">
+		insert into tbl_file(FILE_CODE, BOARD_NUM, FILE_NAME, FILE_ORIGINAL_NAME, FILE_EXTENSION)
+		values('BF' || seq_file.nextval, #{board_num}, #{file_name}, #{file_original_name}, #{file_extension})
 	</insert>
 	
 	<!-- 선택한 게시판에 있는 첨부파일 목록 -->
 	<select id="getOpenBoardFile" resultType="BoardFileVo">
 		select * from tbl_file
-		where board_num = #{board_num}
+		where board_num = #{board_num} and file_state = 'Y'
 	</select>
 	
 	<!-- 첨부파일 다운로드 Map 사용해보기 -->
 	<select id="fileDown" parameterType="hashMap" resultType="hashMap">
 		select * from tbl_file
 		where file_code = #{file_code}
-	</select>
+	</select>	
 </mapper>

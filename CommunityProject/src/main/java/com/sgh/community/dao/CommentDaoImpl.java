@@ -35,4 +35,27 @@ public class CommentDaoImpl implements CommentDao {
 		sqlSession.update(NAMESPACE + "updateCommentCount", board_num);
 	}
 
+	// 댓글 삭제
+	@Override
+	public void deleteComment(Map<String, Object> deleteCommentMap) throws Exception {
+		sqlSession.update(NAMESPACE + "deleteComment", deleteCommentMap);
+	}
+
+	// 댓글 수정
+	@Override
+	public void modifyComment(Map<String, Object> modifyCommentMap) throws Exception {
+		sqlSession.update(NAMESPACE + "modifyComment", modifyCommentMap);
+	}
+
+	// 댓글 수 감소
+	@Override
+	public void deleteCommentCount(String board_num) throws Exception {
+		sqlSession.update(NAMESPACE + "deleteCommentCount", board_num);
+	}
+
+	@Override
+	public int totalComment(String board_num) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "totalComment", board_num);
+	}
+
 }

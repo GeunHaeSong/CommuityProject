@@ -6,14 +6,14 @@ import java.util.Map;
 import com.sgh.community.domain.BoardFileVo;
 import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
-import com.sgh.community.domain.RegistCategory;
-import com.sgh.community.domain.RegistVo;
+import com.sgh.community.domain.CategoryVo;
+import com.sgh.community.domain.WriteModifyVo;
 
 public interface BoardDao {
 	// 게시글 쓸때 보여주는 카테고리 목록 가져오기
-	public List<RegistCategory> getCategory() throws Exception;
+	public List<CategoryVo> getCategory() throws Exception;
 	// 게시글 글쓰기
-	public void insertBoard(RegistVo registVo) throws Exception;
+	public void insertBoard(WriteModifyVo registVo) throws Exception;
 	// 파일 업로드(트랜잭션)
 	public void insertFile(BoardFileVo boardFileVo) throws Exception;
 	// 가장 최근 게시글 번호 가져오기(이미지 업로드에서 사용할 board_num)(트랜잭션)
@@ -30,4 +30,12 @@ public interface BoardDao {
 	public void openBoardViewUp(String board_num) throws Exception;
 	// 첨부파일 다운로드
 	public Map<String, Object> fileDown(String file_code) throws Exception;
+	// 첨부파일 다운로드 횟수 + 1 (ajax 처리 해야하기 때문에 나중에 추가)
+	public void downPlusFile(Map<String, Object> downPlusFileMap) throws Exception;
+	// 첨부파일 삭제(수정할 때 트랜잭션 처리)
+	public void deleteFile(String file_code) throws Exception;
+	// 게시글 수정
+	public void updateBoard(WriteModifyVo writeModifyVo) throws Exception;
+	// 게시글 삭제
+	public void deleteBoard(Map<String, Object> deleteBoardMap) throws Exception;
 }

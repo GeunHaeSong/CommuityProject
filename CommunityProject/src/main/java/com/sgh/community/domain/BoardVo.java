@@ -3,8 +3,10 @@ package com.sgh.community.domain;
 import java.sql.Timestamp;
 
 public class BoardVo {
+	// 게시글에 category_name이 필요해서 조인하여 사용하였고, Vo에 category_name 추가
 	private int board_num;
 	private String category_code;
+	private String category_name;
 	private String member_id;
 	private String board_title;
 	private String board_content;
@@ -30,6 +32,12 @@ public class BoardVo {
 	}
 	public void setCategory_code(String category_code) {
 		this.category_code = category_code;
+	}
+	public String getCategory_name() {
+		return category_name;
+	}
+	public void setCategory_name(String category_name) {
+		this.category_name = category_name;
 	}
 	public String getMember_id() {
 		return member_id;
@@ -99,10 +107,11 @@ public class BoardVo {
 	}
 	@Override
 	public String toString() {
-		return "BoardVo [board_num=" + board_num + ", category_code=" + category_code + ", member_id=" + member_id
-				+ ", board_title=" + board_title + ", board_content=" + board_content + ", board_reg_t=" + board_reg_t
-				+ ", board_modi_t=" + board_modi_t + ", board_delete_t=" + board_delete_t + ", board_view=" + board_view
-				+ ", comment_count=" + comment_count + ", board_up=" + board_up + ", board_state=" + board_state
-				+ ", board_main_image=" + board_main_image + "]";
+		return "BoardVo [board_num=" + board_num + ", category_code=" + category_code + ", category_name="
+				+ category_name + ", member_id=" + member_id + ", board_title=" + board_title + ", board_content="
+				+ board_content + ", board_reg_t=" + board_reg_t + ", board_modi_t=" + board_modi_t
+				+ ", board_delete_t=" + board_delete_t + ", board_view=" + board_view + ", comment_count="
+				+ comment_count + ", board_up=" + board_up + ", board_state=" + board_state + ", board_main_image="
+				+ board_main_image + "]";
 	}
 }

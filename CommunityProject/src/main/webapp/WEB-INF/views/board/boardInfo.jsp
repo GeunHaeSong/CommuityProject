@@ -41,8 +41,9 @@ $(function() {
 	// 게시글의 댓글 수 가져오기
 	$("#btnTotalComment").click(function() {
 		var url = "/comment/totalComment";
+		var board_num = "${BoardVo.board_num}";
 		var sendData = {
-			"board_num" : "${BoardVo.board_num}"
+			"board_num" : board_num
 		};
 		
 		$.get(url, sendData, function(rData) {
@@ -114,6 +115,7 @@ $(function() {
 			"success" : function(rData) {
 				$("#showComments").trigger("click");
 				$("#btnTotalComment").trigger("click");
+				$("#comment_content").val("");
 			}
 		});
 	});
@@ -137,8 +139,8 @@ $(function() {
 		// 댓글 수정 폼 만들기(중복 방지)
 		$(".modifyContent").remove();
 		var input = "<div class='modifyForm'><input type='text' id='modifyContent' class='modifyContent' placeholder='댓글을 입력해주세요.'>";
-		input += "<button type='button' id='btnModifyOk' class='modifyContent'>수정</button>";
-		input += "<button type='button' id='btnModifyCancle' class='modifyContent'>취소</button></div>";
+		input += "<button type='button' id='btnModifyOk' class='modifyContent btn btn-sm btn-primary'>수정</button>";
+		input += "<button type='button' id='btnModifyCancle' class='modifyContent btn btn-sm btn-danger'>취소</button></div>";
 		var cl_content = $(this).parent().parent();
 		
 		// 기존의 폼 저장해두기
@@ -178,6 +180,7 @@ $(function() {
 			},
 			"success" : function(rData) {
 				if(rData == "success") {
+					originalComment = "";
 					$("#showComments").trigger("click");
 				} else {
 					alert("로그인 정보와 댓글 작성자가 일치하지 않습니다.");
@@ -227,7 +230,7 @@ $(function() {
 	
 	// 게시글 좋아요 이미지 변경
 	$("#btnUpCheck").click(function() {
-		var url = "/freeBoard/boardUpCheck";
+		var url = "/board/boardUpCheck";
 		var sendData = {
 				"board_num" : "${BoardVo.board_num}"
 		};
@@ -244,7 +247,7 @@ $(function() {
 	// 게시글 좋아요
 	$("#boardUp").click(function(e) {
 		e.preventDefault();
-		var url = "/freeBoard/boardUp";
+		var url = "/board/boardUp";
 		var sendData = {
 			"board_num" : "${BoardVo.board_num}"
 		};
@@ -264,34 +267,34 @@ $(function() {
 	}
 });
 </script>
-<body>
-	<!-- 사용자에게 보여주지 않을 것 -->
-	<div>
-		<button type="button" id="btnTotalComment" style="display: none;">댓글 수</button>
-		<button type="button" id="btnUpCheck" style="display: none;">좋아요 이미지 변경</button>
-		<div id="commentForm" style="display: none;">
-			<div style="float: left; width: 15%">
-				<span id="cl_id"></span>
-			</div>
-			<div style="float: left; width: 45%" id="divContent">
-				<span id="cl_content"></span>
-			</div>
-			<div style="float: left; width: 30%">
-				<span id="cl_date"></span>
-			</div>
-			<div id="divBtnComment">
-				<a href="/#" id="comment_modify"><span style="color: green;">수정</span></a>
-				<a href="/#" id="comment_delete"><span style="color: red;">삭제</span></a>
-			</div>
-			<hr>
+<!-- 삭제 처리 -->
+<form id="deleteBoardForm" action="/board/deleteBoardRun" method="post">
+	<input type="hidden" name="clickCategory" value="${BoardVo.category_code}">
+	<input type="hidden" name="board_num" value="${BoardVo.board_num}">
+</form> 
+
+<!-- 사용자에게 보여주지 않을 것 -->
+<div>
+	<button type="button" id="btnTotalComment" style="display: none;">댓글 수</button>
+	<button type="button" id="btnUpCheck" style="display: none;">좋아요 이미지 변경</button>
+	<div id="commentForm" style="display: none; border: 1px solid;">
+		<div>
+			<strong id="cl_id"></strong>
+		</div>
+		<div id="divContent">
+			<span id="cl_content"></span>
+		</div>
+		<div>
+			<span id="cl_date" style="color:gray;"></span>
+		</div>
+		<div id="divBtnComment" style="margin-bottom:5px;">
+			<a href="/#" id="comment_modify"><span style="color: green;">수정</span></a>
+			<a href="/#" id="comment_delete"><span style="color: red;">삭제</span></a>
 		</div>
 	</div>
-	<!-- 삭제 처리 -->
-	<form id="deleteBoardForm" action="/freeBoard/deleteBoardRun" method="get">
-		<input type="hidden" name="category_code" value="${BoardVo.category_code}">
-		<input type="hidden" name="board_num" value="${BoardVo.board_num}">
-	</form> 
-	
+</div>
+
+<body>
 	<div id="colorlib-page">
 		<a href="#" class="js-colorlib-nav-toggle colorlib-nav-toggle"><i></i></a>
 		
@@ -302,11 +305,11 @@ $(function() {
 			<section class="ftco-section ftco-no-pt ftco-no-pb">
 	    	<div class="container">
 	    		<div class="row d-flex">
-	    			<div class="col-lg-14 px-md-5 py-5">
+	    			<div class="col-md-6">
 	    				<div class="pt-md-4">
-    						<a href="/freeBoard/boardList?category_code=${BoardVo.category_code}">${BoardVo.category_name}</a>
+    						<a href="/board/boardList?clickCategory=${BoardVo.category_code}">${BoardVo.category_name}</a>
 	    					<!-- 게시글 제목 부분 -->
-	    					<h1><span>${BoardVo.board_title}</span></h1>
+	    					<h1><strong>${BoardVo.board_title}</strong></h1>
 	    					<span class="subSpan">${BoardVo.member_id} |</span>
 	    					<!-- 게시글 수정 이력이 없다면 등록 시간으로, 수정 이력이 있으면 수정 시간으로 -->
 	    					<c:choose>
@@ -326,7 +329,7 @@ $(function() {
             					<c:forEach items="${BoardFileList}" var="BoardFileVo">
 		            				<c:choose>
 			            				<c:when test="${BoardFileVo.file_extension == 'jpg' || BoardFileVo.file_extension == 'png' || BoardFileVo.file_extension == 'gif'}">
-			            					<p><img src="/freeBoard/displayImage?fileName=${BoardFileVo.file_name}" alt="${BoardFileVo.file_name}" class="imageFile"/></p>
+			            					<p><img src="/board/displayImage?fileName=${BoardFileVo.file_name}" alt="${BoardFileVo.file_name}" class="imageFile"/></p>
 			            				</c:when>
 		            				</c:choose>
 	            				</c:forEach>
@@ -339,8 +342,8 @@ $(function() {
 		            		<!-- 수정/삭제 -->
 		            		<c:if test="${BoardVo.member_id == sessionScope.member_id }">
 			            		<div style="text-align: right;">
-			            			<a href="/freeBoard/updateBoard?board_num=${BoardVo.board_num}"><span style="color: green;">수정</span></a>
-			            			<a href="/freeBoard/deleteBoardRun?category_code='${BoardVo.category_code}'" id="spanDeleteBoard"><span style="color: red;">삭제</span></a>
+			            			<a href="/board/updateBoard?board_num=${BoardVo.board_num}"><span style="color: green;">수정</span></a>
+			            			<a href="#" id="spanDeleteBoard"><span style="color: red;">삭제</span></a>
 			            		</div>
 		            		</c:if>
 		            		
@@ -358,27 +361,17 @@ $(function() {
 	    						<strong>첨부파일</strong>
 	    						<ul>
 	    						<c:forEach items="${BoardFileList}" var="BoardFileVo">
-		            				<li><a href="/freeBoard/fileDown?file_code=${BoardFileVo.file_code}" class="appendingFile">${BoardFileVo.file_name}</a></li>
+		            				<li><a href="/board/fileDown?file_code=${BoardFileVo.file_code}" class="appendingFile">${BoardFileVo.file_name}</a></li>
 	    						</c:forEach>
 	    						</ul>
 		            		</div>
 		            		<hr>
-<!-- 	            			네모난 박스 뜨는데 난중에 보고 활용할거 있으면 활용하기 -->
-<!-- 				            <div class="tag-widget post-tag-container mb-5 mt-5"> -->
-<!-- 				              <div class="tagcloud"> -->
-<!-- 				                <a href="#" class="tag-cloud-link">Life</a> -->
-<!-- 				                <a href="#" class="tag-cloud-link">Sport</a> -->
-<!-- 				                <a href="#" class="tag-cloud-link">Tech</a> -->
-<!-- 				                <a href="#" class="tag-cloud-link">Travel</a> -->
-<!-- 				              </div> -->
-<!-- 				            </div> -->
-
 					<!-- 댓글 부분 -->
 		            <div>
 		              <span><strong class="mb-5 font-weight-bold" id="totalComment" style="font-size: 25px;">${BoardVo.comment_count} 댓글</strong></span>
 		              <span><button type="button" id="showComments" class="btn py-2 px-3 btn-primary">댓글 목록</button></span>
 		              <hr>
-		              <div id="showCommentList"></div>
+		              <div id="showCommentList" style="margin-bottom: 50px;"></div>
 		              
 		              <!-- 댓글다는 부분 / 로그인 해야 사용 가능 -->
 		              <c:if test="${not empty sessionScope.member_id }">
@@ -397,16 +390,6 @@ $(function() {
 		            </div>
 			    		</div><!-- END-->
 			    	</div>
-		    	<!-- 오른쪽 사이드 부분, 검색 부분 나중에 재활용 -->
-<!--     			<div class="col-lg-4 sidebar ftco-animate bg-light pt-5"> -->
-<!-- 	            <div class="sidebar-box pt-md-4"> -->
-<!-- 	              <form action="#" class="search-form"> -->
-<!-- 	                <div class="form-group"> -->
-<!-- 	                  <span class="icon icon-search"></span> -->
-<!-- 	                  <input type="text" class="form-control" placeholder="검색어를 입력해주세요."> -->
-<!-- 	                </div> -->
-<!-- 	              </form> -->
-<!-- 	            </div> -->
 	    		</div>
 	    	</div>
 	    </section>

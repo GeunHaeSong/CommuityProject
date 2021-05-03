@@ -53,6 +53,7 @@ public class CommentDaoImpl implements CommentDao {
 		sqlSession.update(NAMESPACE + "deleteCommentCount", board_num);
 	}
 
+	// 해당 게시글의 댓글 수 가져오기
 	@Override
 	public int totalComment(String board_num) throws Exception {
 		return sqlSession.selectOne(NAMESPACE + "totalComment", board_num);

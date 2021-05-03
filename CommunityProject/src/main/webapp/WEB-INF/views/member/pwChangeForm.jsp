@@ -10,6 +10,25 @@
 
 <script>
 $(function() {
+	// 첫번째 비밀번호 체크
+	$("#member_pw").blur(function() {
+		$(".pw_clone").remove();
+		var member_pw = $(this).val();
+		var resultMessage = $("#resultMessage").clone().addClass("pw_clone");
+		
+		// 비밀번호 조건 체크
+		var pw_rgx = /^[a-z0-9]{6,20}$/;
+		if(!pw_rgx.test(member_pw)) {
+			var message = "비밀번호는 6~20자 영어 소문자와 숫자로만 이루어져야합니다.";
+			resultMessage.find("strong").text(message);
+			$("#member_pw2").after(resultMessage);
+			$("#pw_result").val("false");
+			return false;
+		} else {
+			$(".pw_clone").remove();
+		}
+	});
+	
 	// 비밀번호와 비밀번호 확인이 다르게 입력되었을 경우
 	$("#pwChangeForm").submit(function() {
 		var pw = $("#member_pw").val();
@@ -22,7 +41,7 @@ $(function() {
 	});
 });
 </script>
-
+<div id="resultMessage"><span><strong class="join_message" style="color:red;"></strong></span></div>
 <div id="colorlib-main">
 	<section class="ftco-section ftco-no-pt ftco-no-pb">
 		<div class="container-fluid">
@@ -31,7 +50,7 @@ $(function() {
 				<div class="col-md-9">
 					<div class="jumbotron">
 						<h2>비밀번호 찾기</h2>
-						<p>아이디 이름과 이메일을 정확히 입력해주세요.</p>
+						<p>새 비밀번호를 입력해주세요.</p>
 					</div>
 				</div>
 				<div class="col-md-2"></div>

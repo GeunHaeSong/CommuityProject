@@ -37,7 +37,7 @@ $(function() {
 		var rear = fileName.substring(slashIndex + 1);
 		// 원래 파일 이름 사용할 일 있으면 나중에 사용하기
 		var thumbnailName = front + "sm_" + rear;
-		$(this).attr("src", "/freeBoard/displayImage?fileName=" + thumbnailName);
+		$(this).attr("src", "/board/displayImage?fileName=" + thumbnailName);
 	});
 	
 	// 전송하기
@@ -61,7 +61,7 @@ $(function() {
 		
 		var removeDiv = $(this).parent();
 		var fileName = $(this).attr("href");
-		var url = "/freeBoard/deleteImage";
+		var url = "/board/deleteImage";
 		var sendData = {"fileName" : fileName};
 		$.ajax({
 			"type" : "get",
@@ -87,7 +87,7 @@ $(function() {
 		
 		var removeDiv = $(this).parent();
 		var fileName = $(this).attr("href");
-		var url = "/freeBoard/deleteImage";
+		var url = "/board/deleteImage";
 		var sendData = {"fileName" : fileName};
 		$.ajax({
 			"type" : "get",
@@ -100,6 +100,12 @@ $(function() {
 				removeDiv.remove();
 			}
 		});
+	});
+	
+	// 취소하기
+	$("#btnCancle").click(function() {
+		var board_num = "${BoardVo.board_num}";
+		location.href = "/board/boardInfo?board_num=" + board_num;
 	});
 });
 
@@ -129,7 +135,7 @@ function uploadFile(value) {
 		fileIndex ++;
 		var formData = new FormData(); // <form> 작성
 		formData.append("file", file); // <input type="file"> : 파일 선택
-		var url = "/freeBoard/uploadAjax";
+		var url = "/board/uploadAjax";
 		$.ajax({
 			"processData" : false,  // text 파일
 			"contentType" : false,	// text 파일
@@ -151,7 +157,7 @@ function uploadFile(value) {
 				
 				var html = "<div data-fileName='" + rData + "'>";
 				if(extension == "jpg" || extension == "png" || extension == "gif") {
-					html += "<img src='/freeBoard/displayImage?fileName=" + thumbnailName + "'/><br/>";
+					html += "<img src='/board/displayImage?fileName=" + thumbnailName + "'/><br/>";
 				} else {
 					html += "<img src='/resources/images/fileImage.png' width='50' height='50'/><br/>";
 				}
@@ -184,7 +190,7 @@ function uploadFile(value) {
         </div>
         <div class="row block-9">
           <div class="col-lg-9 d-flex">
-            <form id="updateForm" action="/freeBoard/updateBoardRun" class="bg-light p-5 contact-form" method="get">
+            <form id="updateForm" action="/board/updateBoardRun" class="bg-light p-5 contact-form" method="post">
             	<input type="hidden" name="board_num" value="${BoardVo.board_num}"/>
 	            <div class="form-group">
 	              <select id="category">
@@ -208,7 +214,7 @@ function uploadFile(value) {
 	            		<div data-fileName="${BoardFileVo.file_name}">
 	            			<c:choose>
 		            			<c:when test="${BoardFileVo.file_extension == 'jpg' || BoardFileVo.file_extension == 'png' || BoardFileVo.file_extension == 'gif'}">
-									<img src="/freeBoard/displayImage?fileName=${BoardFileVo.file_name}" class="displayThumbnail"/>
+									<img src="/board/displayImage?fileName=${BoardFileVo.file_name}" class="displayThumbnail"/>
 								</c:when>
 								<c:otherwise>
 									<img src="/resources/images/fileImage.png" width='50' height='50'/>
@@ -233,7 +239,7 @@ function uploadFile(value) {
 	            </div>
 	            <div class="form-group">
 		            <input type="submit" value="작성하기" class="btn btn-primary py-3 px-5">
-		            <input type="button" value="취소하기" class="btn btn-primary py-3 px-5">
+		            <input id="btnCancle" type="button" value="취소하기" class="btn btn-primary py-3 px-5">
 	            </div>
             </form>
           

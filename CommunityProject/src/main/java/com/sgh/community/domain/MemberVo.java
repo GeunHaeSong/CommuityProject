@@ -11,12 +11,12 @@ public class MemberVo {
 	private String member_birthday;
 	private String member_phone_number;
 	private String member_address;
-	private String rating_name;
-	private int member_point;
 	private String member_state;
 	private String member_name;
 	private Timestamp member_regdate;
 	private Timestamp member_wthdr_date;
+	private Timestamp member_login_date;
+	
 	public MemberVo() {
 		super();
 	}
@@ -62,18 +62,6 @@ public class MemberVo {
 	public void setMember_address(String member_address) {
 		this.member_address = member_address;
 	}
-	public String getRating_name() {
-		return rating_name;
-	}
-	public void setRating_name(String rating_name) {
-		this.rating_name = rating_name;
-	}
-	public int getMember_point() {
-		return member_point;
-	}
-	public void setMember_point(int member_point) {
-		this.member_point = member_point;
-	}
 	public String getMember_state() {
 		return member_state;
 	}
@@ -98,12 +86,18 @@ public class MemberVo {
 	public void setMember_wthdr_date(Timestamp member_wthdr_date) {
 		this.member_wthdr_date = member_wthdr_date;
 	}
+	public Timestamp getMember_login_date() {
+		return member_login_date;
+	}
+	public void setMember_login_date(Timestamp member_login_date) {
+		this.member_login_date = member_login_date;
+	}
 	@Override
 	public String toString() {
 		return "MemberVo [member_id=" + member_id + ", member_pw=" + member_pw + ", member_nickname=" + member_nickname
 				+ ", member_email=" + member_email + ", member_birthday=" + member_birthday + ", member_phone_number="
-				+ member_phone_number + ", member_address=" + member_address + ", rating_name=" + rating_name
-				+ ", member_point=" + member_point + ", member_state=" + member_state + ", member_name=" + member_name
-				+ ", member_regdate=" + member_regdate + ", member_wthdr_date=" + member_wthdr_date + "]";
+				+ member_phone_number + ", member_address=" + member_address + ", member_state=" + member_state
+				+ ", member_name=" + member_name + ", member_regdate=" + member_regdate + ", member_wthdr_date="
+				+ member_wthdr_date + ", member_login_date=" + member_login_date + "]";
 	}
 }

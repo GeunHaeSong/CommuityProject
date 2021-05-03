@@ -14,13 +14,14 @@ public class EmailUtil {
 	public static EmailDto joinEmailForm(String to) throws Exception {
 		int authentication_number = (int)(Math.random() * 899999) + 100000;
 		String subject = "Cyrus 커뮤니티 사이트에서 요청된 인증 메일 입니다.";
-		String contents = "회원가입을 진행해주셔서 감사합니다. 회원가입에 필요한 인증 번호 입니다.";
+		String contents = "이메일 인증을 진행해주셔서 감사합니다.";
 		contents += "\n\n인증 번호는 " + authentication_number + " 입니다.";
 		
 		EmailDto emailDto = new EmailDto();
 		emailDto.setTo(to);
 		emailDto.setSubject(subject);
 		emailDto.setContents(contents);
+		emailDto.setAuthentication_number(authentication_number);
 		return emailDto;
 	}
 	

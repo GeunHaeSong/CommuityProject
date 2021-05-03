@@ -19,6 +19,7 @@
 // 주소 api 받기
 function jusoCallBack(roadFullAddr){
 	$("#member_address").val(roadFullAddr);
+	$("#address_result").val("true");
 }
 
 $(function() {
@@ -27,8 +28,8 @@ $(function() {
 	var authentication_number;
 	
 	// 회원가입에 실패했다면
-	var result = "${result}";
-	if(result == "false") {
+	var joinResult = "${joinResult}";
+	if(joinResult == "false") {
 		alert("회원가입에 실패하셨습니다.");
 	}
 	
@@ -72,7 +73,6 @@ $(function() {
 	// 첫번째 비밀번호 체크
 	$("#member_pw").blur(function() {
 		$(".pw_clone").remove();
-		console.log("포커스");
 		var member_pw = $(this).val();
 		var resultMessage = $("#resultMessage").clone().addClass("pw_clone");
 		
@@ -143,6 +143,7 @@ $(function() {
 		$(".email_clone").remove();
 		var email = $(this).val();
 		var resultMessage = $("#resultMessage").clone().addClass("email_clone");
+		$("#emailSender_check").attr("disabled", true);
 		
 		var email_rgx = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/;
 		if(!email_rgx.test(email)) {
@@ -188,6 +189,11 @@ $(function() {
 		}
 		
 		$("#email_authentication").removeAttr("readonly");
+		// 이메일 보내기 시간 차 두기
+		$("#emailSender").attr("disabled", true);
+		setTimeout(function() {
+			$("#emailSender").attr("disabled", false);
+		}, 3000);
 		
 		var url = "/member/emailSender";
 		var to = $("#member_email").val();
@@ -198,7 +204,8 @@ $(function() {
 			authentication_number = rData;
 			$(".email_clone").remove();
 			var message = "성공적으로 이메일을 보냈습니다.";
-			resultMessage.find("strong").text(message);
+			resultMessage.find("strong").text(message).css("color", "blue");
+			$("#emailSender_check").attr("disabled", false);
 			$("#email_authentication").after(resultMessage);
 		});
 	});
@@ -207,9 +214,9 @@ $(function() {
 	$("#emailSender_check").click(function() {
 		$(".email_clone").remove();
 		var resultMessage = $("#resultMessage").clone().addClass("email_clone");
-		var email_check = $("#email_check").val();
+		var email_authentication = $("#email_authentication").val();
 		
-		if(authentication_number != email_check) {
+		if(authentication_number != email_authentication) {
 			var message = "인증 번호와 일치하지 않습니다.";
 			resultMessage.find("strong").text(message);
 			$("#email_authentication").after(resultMessage);
@@ -217,16 +224,20 @@ $(function() {
 		} else {
 			var message = "인증되었습니다.";
 			resultMessage.find("strong").text(message);
-			$("#email_authentication").after(resultMessage).css("color", "blue");
+			$("#email_authentication").after(resultMessage);
+			$(".email_clone").find(".join_message").css("color", "blue")
+			$("#emailSender").attr("disabled", "true");
+			$(this).attr("disabled", "true");
 			$("#email_authentication_result").val("true");
+			
 		}
 	});
 	
-	// 생년 월일 체크
+	// 생년 체크
 	$("#yy").blur(function() {
 		$(".birth_clone").remove();
 		var yy = $(this).val();
-		var yy_rgx = /^[0-9]{1,4}$/;
+		var yy_rgx = /^[0-9]{4}$/;
 		var resultMessage = $("#resultMessage").clone().addClass("birth_clone");
 		
 		if(!yy_rgx.test(yy)) {
@@ -424,7 +435,7 @@ $(function() {
 							<label for="member_email">이메일</label>
 							<input type="email" class="form-control" id="member_email" name="member_email"/>
 							<input type="text" class="form-control" id="email_authentication" placeholder="인증번호 | 메일을 보내셔야 입력 가능합니다." readonly/>
-							<button id="emailSender_check" type="button" class="btn btn-sm btn-primary">인증 확인</button>
+							<button id="emailSender_check" type="button" class="btn btn-sm btn-primary" disabled>인증 확인</button>
 							<button id="emailSender" type="button" class="btn btn-sm btn-primary">메일 보내기</button>
 						</div>
 						<div class="form-group">

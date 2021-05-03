@@ -6,22 +6,96 @@
 <mapper namespace="mappers.board-mapper">
 	<!-- 게시판 글 쓸때 삭제되지 않은 카테고리 가져오기 -->
 	<select id="getCategory" resultType="CategoryVo">
-		select category_code, category_name from tbl_category
+		select * from tbl_category
 		where category_state = 'Y'
-		order by category_code asc
+		order by category_order asc
 	</select>
 	
 	<!-- 게시판 글 목록 가져오기(삭제되지않은것) -->
 	<select id="getBoardList" resultType="BoardVo">
-		select * from (select rownum rnum, a.* from (select * from tbl_board
-		where category_code = #{category_code} and board_state = 'Y' order by board_num desc) a)
+		select * from
+				(select rownum rnum, a.* from
+				(select b.*, c.category_name from tbl_board b, tbl_category c
+				 where b.category_code = c.category_code and 
+				 b.category_code = #{category_code} and b.board_state = 'Y'
+			 	<!-- 검색어 설정 -->
+				<choose>
+					<when test='keyword == ""'>
+					</when>
+					<when test='keywordType == ""'>
+					and (b.member_id like '%' || #{keyword} || '%' or b.board_title like '%' || #{keyword} || '%')
+					</when>
+					<when test='keywordType == "typeId"'>
+					and b.member_id like '%' || #{keyword} || '%'
+					</when>
+					<when test='keywordType == "typeTitle"'>
+					and b.board_title like '%' || #{keyword} || '%'
+					</when>
+				</choose>
+				 order by b.board_num desc) a)
 		where rnum between #{startRow} and #{endRow}
 	</select>
 	
+	<!-- 전체 글 목록 가져오기(삭제되지않은것) -->
+	<select id="getBoardListAll" resultType="BoardVo">
+		select * from (select rownum rnum, a.* from (select b.*, c.category_name from tbl_board b, tbl_category c
+		where b.category_code = c.category_code and b.board_state = 'Y'
+	 	<!-- 검색어 설정 -->
+		<choose>
+			<when test='keyword == ""'>
+			</when>
+			<when test='keywordType == ""'>
+			and (b.member_id like '%' || #{keyword} || '%' or b.board_title like '%' || #{keyword} || '%')
+			</when>
+			<when test='keywordType == "typeId"'>
+			and b.member_id like '%' || #{keyword} || '%'
+			</when>
+			<when test='keywordType == "typeTitle"'>
+			and b.board_title like '%' || #{keyword} || '%'
+			</when>
+		</choose>
+		order by board_num desc) a)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 게시판 카테고리 별 게시글 수 가져오기(삭제되지않은것) -->
+	<select id="getCategoryBoardTotalCount" resultType="integer">
+		select count(*) from tbl_board
+		where board_state = 'Y' and category_code = #{category_code}
+	 	<!-- 검색어 설정 -->
+		<choose>
+			<when test='keyword == ""'>
+			</when>
+			<when test='keywordType == ""'>
+			and (member_id like '%' || #{keyword} || '%' or board_title like '%' || #{keyword} || '%')
+			</when>
+			<when test='keywordType == "typeId"'>
+			and member_id like '%' || #{keyword} || '%'
+			</when>
+			<when test='keywordType == "typeTitle"'>
+			and board_title like '%' || #{keyword} || '%'
+			</when>
+		</choose>
+	</select>
+	
 	<!-- 게시판 전체 게시글 수 가져오기(삭제되지않은것) -->
-	<select id="getBoardTotalCount" resultType="integer">
+	<select id="getBoardAllCount" resultType="integer">
 		select count(*) from tbl_board
 		where board_state = 'Y'
+	 	<!-- 검색어 설정 -->
+		<choose>
+			<when test='keyword == ""'>
+			</when>
+			<when test='keywordType == ""'>
+			and (member_id like '%' || #{keyword} || '%' or board_title like '%' || #{keyword} || '%')
+			</when>
+			<when test='keywordType == "typeId"'>
+			and member_id like '%' || #{keyword} || '%'
+			</when>
+			<when test='keywordType == "typeTitle"'>
+			and board_title like '%' || #{keyword} || '%'
+			</when>
+		</choose>
 	</select>
 	
 	<!-- 게시판 글쓰기 -->
@@ -62,7 +136,7 @@
 	<!-- 첨부파일 다운로드 횟수 + 1 -->
 	<update id="downPlusFile">
 		update tbl_file set
-			file_down_count = #{file_down_count}
+			file_down_count = file_down_count + 1
 		where file_code = #{file_code}
 	</update>
 	
@@ -84,8 +158,7 @@
 	<!-- 선택한 게시판 글 하나 열기 -->
 	<select id="openOneBoard" resultType="BoardVo">
 		select b.*, c.category_name  from tbl_board b, tbl_category c
-		where b.board_num = #{board_num} and b.board_state = 'Y' and
-		b.category_code = c.category_code
+		where b.board_num = #{board_num} and b.category_code = c.category_code
 	</select>
 	
 	<!-- 선택한 게시글 조회수 올리기 -->

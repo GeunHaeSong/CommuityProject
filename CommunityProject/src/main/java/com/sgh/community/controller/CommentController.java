@@ -49,7 +49,6 @@ public class CommentController {
 	// 댓글 수정
 	@RequestMapping(value="/modifyComment", method=RequestMethod.PUT)
 	public String modifyComment(@RequestBody Map<String, Object> modifyCommentMap, HttpSession session) {
-		// 로그인을 하지 않았을 경우
 		try {
 			String member_id = (String)session.getAttribute("member_id");
 			modifyCommentMap.put("member_id", member_id);
@@ -61,17 +60,20 @@ public class CommentController {
 		return "fail";
 	}
 	
-	// 댓글 삭제
+	// 댓글 삭제(일괄 삭제)
 	@RequestMapping(value="/deleteComment", method=RequestMethod.GET)
-	public String deleteComment(String comment_num, String board_num, HttpSession session) {
-		// 로그인을 하지 않았을 경우
+	public String deleteComment(String[] comment_num, String[] board_num, HttpSession session) {
 		try {
 			String member_id = (String)session.getAttribute("member_id");
 			Map<String, Object> deleteCommentMap = new HashMap<String, Object>();
-			deleteCommentMap.put("comment_num", comment_num);
-			deleteCommentMap.put("member_id", member_id);
-			deleteCommentMap.put("board_num", board_num);
-			commentService.deleteComment(deleteCommentMap);
+			
+			for(int i = 0; i < comment_num.length; i++) {
+				deleteCommentMap.put("comment_num", comment_num[i]);
+				deleteCommentMap.put("member_id", member_id);
+				deleteCommentMap.put("board_num", board_num[i]);
+				commentService.deleteComment(deleteCommentMap);
+			}
+			
 			return "success";
 		} catch (Exception e) {
 			e.printStackTrace();

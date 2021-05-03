@@ -52,7 +52,7 @@ $(function() {
 							<label for="member_pw">이메일</label>
 							<input type="email" class="form-control" name="member_email" required/>
 						</div>
-						<button type="submit" class="btn btn-primary">비밀번호 변경</button>
+						<button type="submit" class="btn btn-primary">확인</button>
 					</form>
 				</div>
 				<div class="col-md-2"></div>

@@ -18,16 +18,48 @@
 	</select>
 	
 	<!-- 회원가입 처리 -->
-	<select id="insertMember" resultType="MemberVo">
+	<insert id="insertMember">
 		insert into tbl_member(member_id, member_pw, member_nickname, member_email, member_birthday, member_phone_number, member_address, member_name)
 		values(#{member_id}, #{member_pw}, #{member_nickname}, #{member_email}, #{member_birthday}, #{member_phone_number}, #{member_address}, #{member_name})
-	</select>
+	</insert>
 	
 	<!-- 로그인 처리 -->
 	<select id="selectMember" resultType="MemberLoginVo">
-		select member_state, rating_name from tbl_member
-		where member_id = #{member_id} and member_pw = #{member_pw}
+		select member_state, member_pw from tbl_member
+		where member_id = #{member_id} and (member_state = 'Y' or member_state = 'A')
 	</select>
+	
+	<!-- 로그인 할 때 정지 됐는지 확인하기(상태가 Y이면) -->
+	<select id="selectSuspension" resultType="suspensionCheckVo">
+		select suspension_no, suspension_end_date from tbl_suspension
+		where member_id = #{member_id} and suspension_state = 'Y'
+	</select>
+	
+	<!-- 로그인 시간이 지났으면 state를 비활성화 N 업데이트 -->
+	<update id="updateLoginSuspension">
+		update tbl_suspension set
+		    suspension_state = 'N'
+		where member_id = #{member_id} and suspension_no = #{suspension_no} and suspension_state = 'Y'
+	</update>
+	
+	<!-- 로그인 할 때 멤버 로그인 시간 업데이트 시키기 -->
+	<update id="loginCheck">
+		update tbl_member set
+		    member_login_date = systimestamp
+		where member_id = #{member_id}
+	</update>
+	
+	<!-- 오늘 방문했는지 체크하기 -->
+	<select id="memberTodayCheck" resultType="integer">
+		select count(*) from tbl_member
+		where member_id = #{member_id} and member_login_date > to_char(sysdate, 'YYYYMMDD')
+	</select>
+	
+	<!-- 로그인 시간 하루에 한번 방문 테이블에 넣기 -->
+	<insert id="insertCheck">
+		insert into tbl_check(member_id)
+		values(#{member_id})
+	</insert>
 	
 	<!-- id 찾기 -->
 	<select id="selectIdFind" resultType="String">
@@ -47,5 +79,53 @@
 		update tbl_member set
 		    member_pw = #{member_pw}
 		where member_id = #{member_id}
+	</update>
+	
+	<!-- 멤버 정보 조회 -->
+	<select id="memberInfo" resultType="MemberVo">
+		select * from tbl_member
+		where member_id = #{member_id}
+	</select>
+	
+	<!-- 멤버 개인 정보 수정 -->
+	<update id="memberInfoModify">
+		update tbl_member set
+		    member_nickname = #{member_nickname},
+		    member_phone_number = #{member_phone_number},
+		    member_birthday = #{member_birthday},
+		    member_email = #{member_email},
+		    member_address = #{member_address}
+		where member_id = #{member_id}
+	</update>
+	
+	<!-- 멤버가 쓴 댓글, 게시글 수 조회 -->
+	<select id="memberBoardCommentCount" resultType="hashMap">
+	select * from
+		(select count(*) board_count from tbl_board where member_id = #{member_id} and board_state = 'Y') b ,
+		(select count(*) comment_count  from tbl_comment where member_id = #{member_id} and comment_state = 'Y') c
+	</select>
+	
+	<!-- 멤버의 게시글 가져오기 -->
+	<select id="myPageShowBoard" resultType="BoardVo">
+		select * from (select rownum rnum, c.* from (select board_num, category_code, board_title, board_reg_t, comment_count, board_view, board_up from tbl_board
+		where member_id = #{member_id}  and board_state = 'Y' order by board_num desc) c)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 멤버의 댓글 가져오기 -->
+	<select id="myPageShowComment" resultType="CommentVo">
+		select * from (
+		select rownum rnum, c.* from (
+		select c.comment_num, c.board_num, c.comment_content, c.comment_reg_t, b.board_state from tbl_comment c, tbl_board b
+		where c.member_id = #{member_id}  and c.comment_state = 'Y' and c.board_num = b.board_num order by c.comment_num desc) c)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 회원 탈퇴 -->
+	<update id="memberWthdr">
+		update tbl_member set
+		    member_state = 'N',
+		    member_wthdr_date = sysdate
+		where member_id = #{member_id} and member_state = 'Y'
 	</update>
 </mapper>

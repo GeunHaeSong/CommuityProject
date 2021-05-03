@@ -11,6 +11,10 @@ public class CommentVo {
 	private Timestamp comment_modi_t;
 	private Timestamp comment_delete_t;
 	private String comment_state;
+	// 댓글 불러오기 할 때 board가 삭제되있는지 아닌지 상태 확인 하기 위한 변수
+	private String board_state;
+	// 카테고리 이름을 표시하기 위해 추가
+	private String category_name;
 	public CommentVo() {
 		super();
 	}
@@ -62,10 +66,23 @@ public class CommentVo {
 	public void setComment_state(String comment_state) {
 		this.comment_state = comment_state;
 	}
+	public String getBoard_state() {
+		return board_state;
+	}
+	public void setBoard_state(String board_state) {
+		this.board_state = board_state;
+	}
+	public String getCategory_name() {
+		return category_name;
+	}
+	public void setCategory_name(String category_name) {
+		this.category_name = category_name;
+	}
 	@Override
 	public String toString() {
 		return "CommentVo [comment_num=" + comment_num + ", board_num=" + board_num + ", member_id=" + member_id
 				+ ", comment_content=" + comment_content + ", comment_reg_t=" + comment_reg_t + ", comment_modi_t="
-				+ comment_modi_t + ", comment_delete_t=" + comment_delete_t + ", comment_state=" + comment_state + "]";
+				+ comment_modi_t + ", comment_delete_t=" + comment_delete_t + ", comment_state=" + comment_state
+				+ ", board_state=" + board_state + ", category_name=" + category_name + "]";
 	}
 }

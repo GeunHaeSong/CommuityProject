@@ -51,12 +51,24 @@ public class BoardDaoImpl implements BoardDao {
 		return sqlSession.selectList(NAMESPACE + "getBoardList", pagingDto);
 	}
 
-	// 게시글 전체 수 가져오기(삭제X)
+	// 전체 글 가져오기(삭제X)
 	@Override
-	public int getBoardTotalCount() throws Exception {
-		return sqlSession.selectOne(NAMESPACE + "getBoardTotalCount");
+	public List<BoardVo> getBoardListAll(PagingDto pagingDto) throws Exception {
+		return sqlSession.selectList(NAMESPACE + "getBoardListAll", pagingDto);
 	}
 
+	// 카테고리 별 게시글 수 가져오기(삭제X)
+	@Override
+	public int getCategoryBoardTotalCount(PagingDto pagingDto) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "getCategoryBoardTotalCount", pagingDto);
+	}
+	
+	// 전체 게시글 수 가져오기(삭제X)
+	@Override
+	public int getBoardAllCount(PagingDto pagingDto) throws Exception {
+		return sqlSession.selectOne(NAMESPACE + "getBoardAllCount", pagingDto);
+	}
+	
 	// 선택한 게시글 하나 열기
 	@Override
 	public BoardVo openOneBoard(String board_num) throws Exception {
@@ -83,8 +95,8 @@ public class BoardDaoImpl implements BoardDao {
 
 	// 첨부파일 다운로드 횟수 증가
 	@Override
-	public void downPlusFile(Map<String, Object> downPlusFileMap) throws Exception {
-		sqlSession.update(NAMESPACE + "downPlusFile", downPlusFileMap);
+	public void downPlusFile(String file_code) throws Exception {
+		sqlSession.update(NAMESPACE + "downPlusFile", file_code);
 	}
 
 	// 첨부파일 삭제

@@ -7,18 +7,17 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-public class MemberInterceptor extends HandlerInterceptorAdapter {
+public class AdminInterceptor extends HandlerInterceptorAdapter {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		// 세션에 아이디 정보가 있으면 확인하기
 		HttpSession session = request.getSession();
-		String member_id = (String)session.getAttribute("member_id");
-		if(member_id == null) {
-			String sessionResult = "false";
-			session.setAttribute("sessionResult", sessionResult);
-			response.sendRedirect("/member/loginInterceptor");
+		String member_state = (String)session.getAttribute("member_state");
+		if(member_state == null || member_state.equals("") || (!member_state.equals("A"))) {
+			String interResult = "false";
+			session.setAttribute("interResult", interResult);
+			response.sendRedirect("/interceptor/adminRun");
 			return false;
 		}
 		return true;

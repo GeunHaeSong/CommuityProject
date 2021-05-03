@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="mappers.admin-mapper">
+	
+	<!-- 오늘의 정보( -->
+	<!-- 어드민 페이지 오늘부터 일주일 전까지의 차트 정보 불러오기 -->
+	<select id="showChartInfo" resultType="ChartDto">
+		select c.chart_date, nvl(b.cnt, 0) board_num, nvl(a.cnt, 0) member_num
+		    from (select to_char(board_reg_t, 'yyyy-mm-dd') as day, count(*) cnt
+		            from tbl_board 
+		            group by to_char(board_reg_t, 'yyyy-mm-dd')) b,
+		        (select to_char(check_date, 'yyyy-mm-dd') as day, count(*) cnt
+		            from tbl_check
+		            group by to_char(check_date, 'yyyy-mm-dd')) a,
+		        (select to_char((sysdate - 7) + level, 'yyyy-mm-dd' ) as chart_date 		  
+		            from dual 
+		            connect by level <![CDATA[ <= ]]>(sysdate - (sysdate - 7))) c
+		    where c.chart_date = b.day(+) and c.chart_date = a.day(+)
+		    group by c.chart_date, nvl(b.cnt, 0), b.cnt, 0, nvl(a.cnt, 0)
+		    order by c.chart_date asc
+	</select>
+	<!-- ) -->
+	
+	<!-- 회원관리( -->
+	<!-- 어드민 회원관리 회원정보 불러오기 -->
+	<select id="memberMngList" resultType="memberMngVo">
+		select * from (select rownum rnum, a.* from (select m.member_id, m.member_nickname, m.member_state, 
+       (select count(*) board_count from tbl_board b where b.member_id = m.member_id) board_num,
+       (select count(*) comment_count  from tbl_comment c where c.member_id = m.member_id) comment_num,
+        (select nvl2(s.suspension_end_date, 'Y', 'N') from tbl_suspension s where s.member_id = m.member_id and s.suspension_end_date > systimestamp and s.suspension_state = 'Y') suspension
+		from tbl_member m
+		where m.member_id is not null
+		<choose>
+			<when test='stateType == "A"'>
+			and m.member_state = 'A'
+			</when>
+			<when test='stateType == "N"'>
+			and m.member_state = 'N'
+			</when>
+			<when test='stateType == "Y"'>
+			and m.member_state = 'Y'
+			</when>
+		</choose>
+		<if test='keyword != ""'>
+			and m.member_id like '%' || #{keyword} || '%'
+		</if>
+		order by m.member_regdate desc) a)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 회원정보 페이징에 필요한 유저수 가져오기 -->
+	<select id="memberCount" resultType="integer">
+		select count(*) from tbl_member
+		where member_id is not null
+		<choose>
+			<when test='stateType == "A"'>
+			and member_state = 'A'
+			</when>
+			<when test='stateType == "N"'>
+			and member_state = 'N'
+			</when>
+			<when test='stateType == "Y"'>
+			and member_state = 'Y'
+			</when>
+		</choose>
+		<if test='keyword != ""'>
+			and member_id like '%' || #{keyword} || '%'
+		</if>
+	</select>
+	
+	<!-- 상태 변경 시키기 -->
+	<update id="updateMemberState">
+		update tbl_member set
+			member_state = #{member_state}
+		where member_id = #{member_id}
+	</update>
+	
+	<!-- 탈퇴 기록 보여주기 -->
+	<select id="showWthdrDate" resultType="string">
+		select member_wthdr_date from tbl_member where member_id = #{member_id}
+	</select>
+	
+	<!-- 정지 먹은 내역 보여주기 -->
+	<select id="showSuspensionRecord" resultType="SuspensionVo">
+		select * from tbl_suspension where member_id = #{member_id} order by suspension_no asc
+	</select>
+	
+	<!-- 정지 내역 총 숫자 가져오기 -->
+	<select id="showSuspensionRecordCount" resultType="integer">
+		select count(*) from tbl_suspension where member_id = #{member_id}
+	</select>
+	
+	<!-- 정지 시키기 -->
+	<insert id="insertSuspension">
+		insert into tbl_suspension(suspension_no, member_id, suspension_reason, suspension_end_date)
+		values(seq_suspension.nextval, #{member_id}, #{suspension_reason}, #{suspension_end_date})
+	</insert>
+	
+	<!-- 정지 해제 시키기 -->
+	<update id="updateSuspension">
+		update tbl_suspension set
+	    	suspension_state = 'N'
+		where suspension_no = #{suspension_no} and member_id = #{member_id}
+	</update>
+	<!-- ) -->
+	
+	<!-- 게시글( -->
+	<!-- 게시글 전체 가져오기 -->
+	<select id="adminSelectBoardList" resultType="BoardVo">
+		select * from
+				(select rownum rnum, a.* from
+				(select b.board_num, b.category_code, c.category_name, b.member_id, b.board_title, b.comment_count, b.board_up, b.board_view, b.board_reg_t, b.board_delete_t, b.board_state
+				from tbl_board b, tbl_category c
+				where b.category_code = c.category_code
+				<!-- 검색 기능 -->
+				<!-- 카테고리 선택 -->
+				<if test='categoryType != ""'>
+				and b.category_code = #{selectCategory}
+				</if>
+				<!-- 삭제된 글인지 아닌지 선택 -->
+				<choose>
+					<when test='stateType == "Y"'>
+					and b.board_state = 'Y'
+					</when>
+					<when test='stateType == "N"'>
+					and b.board_state = 'N'
+					</when>
+				</choose>
+				<!-- 검색어 설정 -->
+				<choose>
+					<when test='keyword == ""'>
+					</when>
+					<when test='keywordType == "typeIdTitle"'>
+					and (b.member_id like '%' || #{keyword} || '%' or b.board_title like '%' || #{keyword} || '%')
+					</when>
+					<when test='keywordType == "typeId"'>
+					and b.member_id like '%' || #{keyword} || '%'
+					</when>
+					<when test='keywordType == "typeTitle"'>
+					and b.board_title like '%' || #{keyword} || '%'
+					</when>
+				</choose>
+				order by b.BOARD_NUM desc) a)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 게시글의 총 숫자 가져오기(전체) -->
+	<select id="adminSelectBoardCount" resultType="integer">
+		select count(*) from tbl_board
+		where member_id is not null
+		<!-- 검색 기능 -->
+		<!-- 카테고리 선택 -->
+		<if test='categoryType != ""'>
+		and category_code = #{selectCategory}
+		</if>
+		<!-- 삭제된 글인지 아닌지 선택 -->
+		<choose>
+			<when test='stateType == "Y"'>
+			and board_state = 'Y'
+			</when>
+			<when test='stateType == "N"'>
+			and board_state = 'N'
+			</when>
+		</choose>
+		<!-- 검색어 설정 -->
+		<choose>
+			<when test='keyword == ""'>
+			</when>
+			<when test='keywordType == "typeIdTitle"'>
+			and (member_id like '%' || #{keyword} || '%' or board_title like '%' || #{keyword} || '%')
+			</when>
+			<when test='keywordType == "typeId"'>
+			and member_id like '%' || #{keyword} || '%'
+			</when>
+			<when test='keywordType == "typeTitle"'>
+			and board_title like '%' || #{keyword} || '%'
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 어드민 게시글 삭제 -->
+	<update id="adminBoardDelete">
+		update tbl_board set
+		    board_state = 'N',
+		    board_delete_t = sysdate
+		where board_num = #{board_num}
+	</update>
+	
+	<!-- 어드민 게시글 복구 -->
+	<update id="adminBoardRestore">
+		update tbl_board set
+		    board_state = 'Y',
+		    board_delete_t = sysdate
+		where board_num = #{board_num}
+	</update>
+	<!-- ) -->
+	
+	<!-- 댓글( -->
+	<!-- 어드민 댓글 가져오기(전체) -->
+	<select id="adminSelectCommentList" resultType="CommentVo">
+		select * from
+		(select rownum rnum, a.* from
+		(select c.*, cg.category_name from tbl_comment c, tbl_board b, tbl_category cg
+		where c.board_num = b.board_num and b.category_code = cg.category_code
+				<!-- 검색 기능 -->
+				<!-- 카테고리 선택 -->
+				<if test='categoryType != ""'>
+				and b.category_code = #{selectCategory}
+				</if>
+				<!-- 삭제된 글인지 아닌지 선택 -->
+				<choose>
+					<when test='stateType == "Y"'>
+					and c.comment_state = 'Y'
+					</when>
+					<when test='stateType == "N"'>
+					and c.comment_state = 'N'
+					</when>
+				</choose>
+				<!-- 검색어 설정 -->
+				<choose>
+					<when test='keyword == ""'>
+					</when>
+					<when test='keywordType == "typeIdTitle"'>
+					and (c.member_id like '%' || #{keyword} || '%' or c.comment_content like '%' || #{keyword} || '%')
+					</when>
+					<when test='keywordType == "typeId"'>
+					and c.member_id like '%' || #{keyword} || '%'
+					</when>
+					<when test='keywordType == "typeTitle"'>
+					and c.comment_content like '%' || #{keyword} || '%'
+					</when>
+				</choose>
+		order by c.comment_num desc) a)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 어드민 댓글 총 숫자 가져오기 -->
+	<select id="adminCommentCount" resultType="integer">
+		select count(*) from tbl_comment c, tbl_board b
+		where c.board_num = b.board_num
+		<!-- 검색 기능 -->
+		<!-- 카테고리 선택 -->
+		<if test='categoryType != ""'>
+		and b.category_code = #{selectCategory}
+		</if>
+		<!-- 삭제된 글인지 아닌지 선택 -->
+		<choose>
+			<when test='stateType == "Y"'>
+			and c.comment_state = 'Y'
+			</when>
+			<when test='stateType == "N"'>
+			and c.comment_state = 'N'
+			</when>
+		</choose>
+		<!-- 검색어 설정 -->
+		<choose>
+			<when test='keyword == ""'>
+			</when>
+			<when test='keywordType == "typeIdTitle"'>
+			and (c.member_id like '%' || #{keyword} || '%' or c.comment_content like '%' || #{keyword} || '%')
+			</when>
+			<when test='keywordType == "typeId"'>
+			and c.member_id like '%' || #{keyword} || '%'
+			</when>
+			<when test='keywordType == "typeTitle"'>
+			and c.comment_content like '%' || #{keyword} || '%'
+			</when>
+		</choose>
+	</select>
+	
+	<!-- 어드민 댓글 삭제에 필요한 게시글 번호 가져오기 -->
+	<select id="selectBoardNum" resultType="string">
+		select board_num from tbl_comment
+		where comment_num = #{comment_num}
+	</select> 
+	
+	<!-- 어드민 댓글 삭제 -->
+	<update id="adminCommentDelete">
+		update tbl_comment set
+		    comment_state = 'N',
+		    comment_delete_t = systimestamp
+		where comment_num = #{comment_num}
+	</update>
+	
+	<!-- 어드민 댓글 복구 -->
+	<update id="adminCommentRestore">
+		update tbl_comment set
+		    comment_state = 'Y'
+		where comment_num = #{comment_num}
+	</update>
+	<!-- ) -->
+	
+	<!-- 사이드 메뉴( -->
+	<!-- 카테고리 목록과 카테고리 별 게시글 댓글 수 가져오기 -->
+	<select id="selectCategoryList" resultType="CategoryVo">
+		select * from (select rownum rnum, a.* from (select cg.*,
+		    (select count(*) from tbl_board b where b.category_code = cg.category_code) board_num,
+		    (select count(*) from tbl_comment c, tbl_board b where c.board_num = b.board_num and b.category_code = cg.category_code) comment_num
+				from tbl_category cg
+				where cg.category_code is not null
+				<!-- 등록/삭제여부 -->
+		        <choose>
+		        	<when test='stateType == "Y"'>
+			        and cg.category_state = 'Y' and category_order is not null
+		        	</when>
+		        	<when test='stateType == "Z"'>
+			        and cg.category_state = 'Y' and category_order is null
+		        	</when>
+		        	<when test='stateType == "N"'>
+			        and cg.category_state = 'N'
+		        	</when>
+		        </choose>
+		        <!-- 접근 권한 -->
+		        <choose>
+		        	<when test='keywordType == "admin"'>
+			        and cg.category_access = 'A'
+		        	</when>
+		        	<when test='keywordType == "user"'>
+			        and cg.category_access = 'Y'
+		        	</when>
+		        </choose>
+		        <!-- 검색 키워드 -->
+	        	<if test='keyword != ""'>
+			        and cg.category_name like '%' || #{keyword} || '%'
+	        	</if>
+		        order by cg.category_order asc) a)
+		where rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<!-- 카테고리 총 숫자 가져오기 -->
+	<select id="adminCategoryCount" resultType="integer">
+		select count(*) from tbl_category
+		where category_code is not null 
+		<!-- 등록/삭제여부 -->
+        <choose>
+        	<when test='stateType == "Y"'>
+	        and category_state = 'Y' and category_order is not null
+        	</when>
+        	<when test='stateType == "Z"'>
+	        and category_state = 'Y' and category_order is null
+        	</when>
+        	<when test='stateType == "N"'>
+	        and category_state = 'N'
+        	</when>
+        </choose>
+        <!-- 접근 권한 -->
+        <choose>
+        	<when test='keywordType == "admin"'>
+	        and category_access = 'A'
+        	</when>
+        	<when test='keywordType == "user"'>
+	        and category_access = 'Y'
+        	</when>
+        </choose>
+        <!-- 검색 키워드 -->
+       	<if test='keyword != ""'>
+	        and category_name like '%' || #{keyword} || '%'
+       	</if>
+	</select>
+	
+	<!-- 세팅에 사용할 카테고리 리스트 -->
+	<select id="selectSetCategoryList" resultType="CategoryVo">
+		select * from tbl_category order by category_order asc
+	</select>
+	
+	<!-- 해당 카테고리의 권한 변경 -->
+	<update id="accessChange">
+		update tbl_category set
+	    	category_access = #{category_access}
+		where category_code = #{category_code}
+	</update>
+	
+	<!-- 카테고리 삭제 -->
+	<update id="deleteCategory">
+		update tbl_category set
+		    category_state = 'N',
+		    category_order = null,
+		    category_delete_t = systimestamp
+		where category_code = #{category_code}
+	</update>
+	
+	<!-- 카테고리 복구 -->
+	<update id="restoreCategory">
+		update tbl_category set
+		    category_state = 'Y'
+		where category_code = #{category_code}
+	</update>
+	
+	<!-- 카테고리 생성 -->
+	<insert id="insertCategory">
+		insert into tbl_category(category_code, category_name, category_access)
+		values('CG' || seq_category.nextval, #{category_name}, #{category_access})
+	</insert>
+	
+	<!-- 카테고리 순서 변경 -->
+	<update id="updateCategoryOrder">
+		update tbl_category set
+			<choose>
+				<when test='category_order == 0'>
+				category_order = null
+				</when>
+				<otherwise>
+		    	category_order = #{category_order}
+				</otherwise>
+			</choose>
+		where category_code = #{category_code}
+	</update>
+	
+	<!-- 카테고리 복구는 최대 9개로 제한 하기 위해 필요한 살아있는 카테고리 숫자 -->
+	<select id="liveCategoryCount" resultType="integer">
+		select count(*) from tbl_category
+		where category_state = 'Y'
+	</select>
+	
+	<!-- ) -->
+</mapper>

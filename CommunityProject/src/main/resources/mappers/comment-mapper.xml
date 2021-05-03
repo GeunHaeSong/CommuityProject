@@ -11,6 +11,12 @@
 		order by comment_reg_t asc
 	</select>
 	
+	<!-- 해당 게시글의 댓글 수 가져오기 -->
+	<select id="totalComment" resultType="integer">
+		select count(*) from tbl_comment
+		where board_num = #{board_num} and comment_state = 'Y'
+	</select>
+	
 	<!-- 해당 게시글에 댓글 작성 -->
 	<insert id="insertComment">
 		insert into tbl_comment(COMMENT_NUM, BOARD_NUM, MEMBER_ID, COMMENT_CONTENT)
@@ -46,11 +52,4 @@
 			comment_delete_t = sysdate
 		where comment_num = #{comment_num} and member_id = #{member_id}
 	</update>
-	
-	<!-- 게시글의 댓글 수 가져오기 -->
-	<select id="totalComment" resultType="int">
-		select comment_count
-		from tbl_board
-		where board_num = #{board_num}
-	</select>
 </mapper>

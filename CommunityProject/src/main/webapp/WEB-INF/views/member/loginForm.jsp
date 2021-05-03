@@ -14,6 +14,15 @@ $(function() {
 	var loginResult = "${loginResult}";
 	if(loginResult == "false") {
 		alert("로그인에 실패하셨습니다. 다시 확인해주세요.");
+	} else if(loginResult == "suspension"){
+		var suspensionEndDate = "${suspensionEndDate}";
+		alert(suspensionEndDate + "까지 정지된 아이디 입니다.");
+	}
+	
+	// 회원가입 결과
+	var joinResult = "${joinResult}";
+	if(joinResult == "success") {
+		alert("회원가입에 성공하셨습니다.");
 	}
 	
 	// 로그인이 필요한 서비스에 로그인 세션이 존재하지 않을 시
@@ -32,6 +41,15 @@ $(function() {
 	var pwChangeResult = "${pwChangeResult}";
 	if(pwChangeResult == "true") {
 		alert("비밀번호를 변경하셨습니다. 변경된 비밀번호로 로그인 해주세요.");
+	}
+	
+	// 회원가입 및 탈퇴
+	var success = "${success}";
+	if(success == "wthdr") {
+		alert("회원 탈퇴에 성공하셨습니다. 회원가입 해주시면 감사합니다.")
+	}
+	if(success == "join") {
+		
 	}
 });
 </script>
@@ -62,9 +80,9 @@ $(function() {
 							<input type="password" class="form-control" id="member_pw" name="member_pw" required/>
 						</div>
 						<button type="submit" class="btn btn-primary">로그인</button>
-						<a href="/find/idFindForm" style="margin-left: 10px;">아이디 찾기</a>
-						<a href="/find/pwFindForm" style="margin-left: 10px;">비밀번호 찾기</a>
-						<a href="/member/joinForm" style="margin-left: 10px;">회원가입</a>
+						<a href="/find/idFindForm?clickCategory=login" style="margin-left: 10px;">아이디 찾기</a>
+						<a href="/find/pwFindForm?clickCategory=login" style="margin-left: 10px;">비밀번호 찾기</a>
+						<a href="/member/joinForm?clickCategory=join" style="margin-left: 10px;">회원가입</a>
 					</form>
 				</div>
 				<div class="col-md-2"></div>

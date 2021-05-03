@@ -31,8 +31,8 @@ $(function() {
 	};
 	
 	$("#registForm").submit(function() {
-		var category = $("#category option:selected").val();
-		var categoryHidden = "<input type='hidden' name='category_code' value='"+category+"'>";
+		var category_code = $("#category option:selected").val();
+		var categoryHidden = "<input type='hidden' name='category_code' value='"+category_code+"'>";
 		$("#registForm").prepend(categoryHidden);
 		
 		var upDiv = $("#choiceFile > div");
@@ -41,6 +41,11 @@ $(function() {
 			var hiddenInput = "<input type='hidden' name='boardFile' value='"+fileName+"'/>";
 			$("#registForm").prepend(hiddenInput);
 		});
+	});
+	
+	// 취소하기
+	$("#btn_cancel").click(function() {
+		location.href = "/board/cancelRun";
 	});
 });
 
@@ -70,7 +75,7 @@ function uploadFile(value) {
 		fileIndex ++;
 		var formData = new FormData(); // <form> 작성
 		formData.append("file", file); // <input type="file"> : 파일 선택
-		var url = "/freeBoard/uploadAjax";
+		var url = "/board/uploadAjax";
 		$.ajax({
 			"processData" : false,  // text 파일
 			"contentType" : false,	// text 파일
@@ -91,7 +96,7 @@ function uploadFile(value) {
 				
 				var html = "<div data-fileName='" + rData + "'>";
 				if(extension == "jpg" || extension == "png" || extension == "gif") {
-					html += "<img src='/freeBoard/displayImage?fileName=" + thumbnailName + "'/><br/>";
+					html += "<img src='/board/displayImage?fileName=" + thumbnailName + "'/><br/>";
 				} else {
 					html += "<img src='/resources/images/fileImage.png' width='50' height='50'/><br/>";
 				}
@@ -108,7 +113,7 @@ function uploadFile(value) {
 		e.preventDefault();
 		var removeDiv = $(this).parent();
 		var fileName = $(this).attr("href");
-		var url = "/freeBoard/deleteImage";
+		var url = "/board/deleteImage";
 		var sendData = {"fileName" : fileName};
 		$.ajax({
 			"type" : "get",
@@ -141,37 +146,27 @@ function uploadFile(value) {
           <div class="col-md-12 mb-4">
             <h2 class="h3">게시글 작성하기</h2>
           </div>
-          <!-- 상단에 이미지 넣을려고 했는데 애매해서 일단 주석 처리, 나중에 여유되면 해보기 -->
-<!-- 	          <div class="w-100"></div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView0"></p> 파일이나 이미지 들어갈거 넣기 -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView1"></p> -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView2"></p> -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
-<!-- 	          <div class="col-lg-6 col-xl-3 d-flex mb-4"> -->
-<!-- 	          	<div class="info bg-light p-4"> -->
-<!-- 		            <p id="fileView3"></p> -->
-<!-- 		          </div> -->
-<!-- 	          </div> -->
         </div>
         <div class="row block-9">
           <div class="col-lg-9 d-flex">
-            <form id="registForm" action="/freeBoard/registRun" class="bg-light p-5 contact-form" method="get">
+            <form id="registForm" action="/board/registRun" class="bg-light p-5 contact-form" method="get">
 	            <div class="form-group">
 	              <select id="category">
-	              <c:forEach items="${categoryList}" var="CategoryVo">
-	              	<option value="${CategoryVo.category_code}">${CategoryVo.category_name}</option>
-	              </c:forEach>
+	              <!-- 이용자의 계정이 어드민이면 모든 카테고리를 보여주고, 그렇지 않으면 어드민만 이용 가능한 카테고리 제외해서 보여주기 -->
+	              	<c:choose>
+	              		<c:when test="${sessionScope.member_state == 'A'}">
+	              			<c:forEach items="${categoryList}" var="CategoryVo">
+			              		<option value="${CategoryVo.category_code}">${CategoryVo.category_name}</option>
+		              		</c:forEach>
+	              		</c:when>
+	              		<c:otherwise>
+			              <c:forEach items="${categoryList}" var="CategoryVo">
+			              	<c:if test="${CategoryVo.category_access eq sessionScope.member_state}">
+				              <option value="${CategoryVo.category_code}">${CategoryVo.category_name}</option>
+				            </c:if>
+			              </c:forEach>
+		              	</c:otherwise>
+		            </c:choose>
 	              </select>
 	            </div>
 	            <div class="form-group">
@@ -189,10 +184,9 @@ function uploadFile(value) {
 	            </div>
 	            <div class="form-group">
 		            <input type="submit" value="작성하기" class="btn btn-primary py-3 px-5">
-		            <input type="button" value="취소하기" class="btn btn-primary py-3 px-5">
+		            <input id="btn_cancel" type="button" value="취소하기" class="btn btn-primary py-3 px-5">
 	            </div>
             </form>
-          
           </div>
         </div>
       </div>
@@ -200,14 +194,7 @@ function uploadFile(value) {
 	</div><!-- END COLORLIB-MAIN -->
 </div><!-- END COLORLIB-PAGE -->
 
-
-<!-- 지도 api인듯? -->
-<!--   <!-- loader -->
-<!--   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div> -->
-
-
 <!-- footer.jsp 인크루드 -->
 <%@ include file="../include/footer.jsp" %>
-    
   </body>
 </html>

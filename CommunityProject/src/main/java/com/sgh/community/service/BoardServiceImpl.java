@@ -14,6 +14,7 @@ import com.sgh.community.domain.BoardVo;
 import com.sgh.community.domain.PagingDto;
 import com.sgh.community.domain.CategoryVo;
 import com.sgh.community.domain.WriteModifyVo;
+import com.sgh.community.util.UploadFileUtil;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -35,13 +36,23 @@ public class BoardServiceImpl implements BoardService {
 		BoardFileVo boardFileVo = new BoardFileVo();
 		
 		// 글쓰기
+		// 들어온 파일에 이미지가 없다면 메인 이미지는 빈공백으로 설정
 		if(boardFile != null) {
+			for(String file : boardFile) {
+				boolean imageCheck = UploadFileUtil.isImage(file);
+				if(imageCheck == true) {
+					writeModifyVo.setBoard_main_image(file);
+					break;
+				} else {
+					writeModifyVo.setBoard_main_image("");
+				}
+			}
 			String file_name = boardFile[0];
 			writeModifyVo.setBoard_main_image(file_name);
 		}
 		boardDao.insertBoard(writeModifyVo);
-		int board_num = boardDao.getLastBoardNum();
 		
+		int board_num = boardDao.getLastBoardNum();
 		// 게시글 쓸때 파일들 파일 테이블에 insert 하기
 		if(boardFile != null) {
 			for(int i = 0; i < boardFile.length; i++) {
@@ -65,11 +76,23 @@ public class BoardServiceImpl implements BoardService {
 	public List<BoardVo> getBoardList(PagingDto pagingDto) throws Exception {
 		return boardDao.getBoardList(pagingDto);
 	}
-
-	// 게시글 총 수 가져오기(삭제되지않은거)
+	
+	// 전체 글 가져오기(삭제되지않은거)
 	@Override
-	public int getBoardTotalCount() throws Exception {
-		return boardDao.getBoardTotalCount();
+	public List<BoardVo> getBoardListAll(PagingDto pagingDto) throws Exception {
+		return boardDao.getBoardListAll(pagingDto);
+	}
+
+	// 게시글 카테고리 별 게시글 수(삭제되지않은거)
+	@Override
+	public int getCategoryBoardTotalCount(PagingDto pagingDto) throws Exception {
+		return boardDao.getCategoryBoardTotalCount(pagingDto);
+	}
+	
+	// 게시글 전체 수 가져오기
+	@Override
+	public int getBoardAllCount(PagingDto pagingDto) throws Exception {
+		return boardDao.getBoardAllCount(pagingDto);
 	}
 
 	// 선택한 게시글 하나 열기
@@ -91,8 +114,10 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	// 첨부파일 다운로드
+	@Transactional
 	@Override
 	public Map<String, Object> fileDown(String file_code) throws Exception {
+		boardDao.downPlusFile(file_code);
 		return boardDao.fileDown(file_code);
 	}
 

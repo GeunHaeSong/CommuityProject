@@ -16,8 +16,12 @@ public interface BoardService {
 	public void insertBoard(WriteModifyVo registVo, String[] boardFile) throws Exception;
 	// 게시글 가져오기(삭제되지않은거)
 	public List<BoardVo> getBoardList(PagingDto pagingDto) throws Exception;
-	// 게시글 전체 수 가져오기(삭제되지않은거)
-	public int getBoardTotalCount() throws Exception;
+	// 전체 글 가져오기(삭제되지않은거)
+	public List<BoardVo> getBoardListAll(PagingDto pagingDto) throws Exception;
+	// 게시글 카테고리 별 게시글 수 가져오기(삭제되지않은거)
+	public int getCategoryBoardTotalCount(PagingDto pagingDto) throws Exception;
+	// 게시글 전체 게시글 수 가져오기(삭제되지않은거)
+	public int getBoardAllCount(PagingDto pagingDto) throws Exception;
 	// 선택한 게시글 하나 열기
 	public BoardVo openOneBoard(String board_num) throws Exception;
 	// 선택한 게시글의 첨부파일 가져오기
